@@ -1,0 +1,15 @@
+{
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/nutri-agent/",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/nutri-agent/:path*",
+      "destination": "/:path*"
+    }
+  ]
+}
