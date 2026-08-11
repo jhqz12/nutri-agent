@@ -1,12 +1,17 @@
 {
-  "redirects": [
+  "rewrites": [
     {
       "source": "/",
-      "destination": "/nutri-agent/",
-      "permanent": false
-    }
-  ],
-  "rewrites": [
+      "destination": "/index.html"
+    },
+    {
+      "source": "/nutri-agent",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/nutri-agent/",
+      "destination": "/index.html"
+    },
     {
       "source": "/nutri-agent/:path*",
       "destination": "/:path*"
