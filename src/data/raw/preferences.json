@@ -1,0 +1,8 @@
+[
+  {"id":"P01","name":"早餐倾向池","meal":"早餐","allowedFoodIds":["F01","F03","F04","F05","F07","F15","F20","F21","F22","F23","F28"],"forbiddenFoodIds":[],"weight":3,"rule":"鸡蛋+少量坚果+无糖酸奶或全麦主食+生果蔬。"},
+  {"id":"P02","name":"午餐倾向池","meal":"午餐","allowedFoodIds":["F02","F03","F06","F08","F09","F10","F11","F14","F16","F17","F21","F23","F24"],"forbiddenFoodIds":[],"weight":4,"rule":"足量杂粮主食+鱼或瘦肉+大量蔬菜+剩余坚果。"},
+  {"id":"P03","name":"晚餐倾向池","meal":"晚餐","allowedFoodIds":["F02","F12","F13","F18","F19","F21","F22","F23","F24"],"forbiddenFoodIds":["F03","F04","F05","F06","F07","F25","F26","F27"],"weight":3,"rule":"少量薯类或无主食+豆腐或鱼虾+凉拌蔬菜；不吃坚果水果。"},
+  {"id":"P04","name":"日间加餐倾向池","meal":"日间加餐","allowedFoodIds":["F25","F26","F27"],"forbiddenFoodIds":[],"weight":1,"rule":"低糖鲜果，仅白天食用。"},
+  {"id":"P05","name":"坚果规则","meal":"坚果","allowedFoodIds":["F03","F04","F05","F06","F07"],"forbiddenFoodIds":[],"weight":1,"rule":"训练日30g、休息日20g，白天分两餐吃完。"},
+  {"id":"P06","name":"全局烹饪限制","meal":"全局","allowedFoodIds":[],"forbiddenFoodIds":[],"weight":1,"rule":"橄榄油早凉拌、午低温炒、晚仅凉拌；禁白砂糖（训练中糖水除外）、重盐、工业酱料、精制糖、白面包和甜饮料。"}
+]
