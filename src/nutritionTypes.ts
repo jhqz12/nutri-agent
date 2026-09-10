@@ -33,6 +33,7 @@ export interface FoodRecord {
   sourceUrl?: string
   userAdded?: boolean
   addedAt?: string
+  tags?: string[]
 }
 
 export interface SupplementRecord {
@@ -52,6 +53,7 @@ export interface SupplementRecord {
   sourceUrl?: string
   userAdded?: boolean
   addedAt?: string
+  tags?: string[]
 }
 
 export interface StandardRecord {

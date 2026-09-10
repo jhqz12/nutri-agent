@@ -186,7 +186,14 @@ export function FoodSupplementLibraryView() {
     } catch (error) { setMessage(error instanceof Error ? error.message : '补剂保存失败。') }
   }
 
-  const filteredFoods = libraries.foods.filter((food) => food.name.includes(search.trim()) && (categoryFilter === '全部' || getFoodCategory(food) === categoryFilter))
+  const filteredFoods = libraries.foods.filter((food) => {
+    const keyword = search.trim()
+    if (!keyword) return categoryFilter === '全部' || getFoodCategory(food) === categoryFilter
+    const inName = food.name.includes(keyword)
+    const inTag = (food.tags ?? []).some((tag) => tag.includes(keyword))
+    const matches = inName || inTag
+    return matches && (categoryFilter === '全部' || getFoodCategory(food) === categoryFilter)
+  })
   const groupedFoods = foodCategories.map((category) => ({ category, foods: filteredFoods.filter((food) => getFoodCategory(food) === category) })).filter((group) => group.foods.length)
   const filteredSupplements = libraries.supplements.filter((supplement) => `${supplement.name}${supplement.brand ?? ''}`.includes(search.trim()))
   const addCategory = categoryFilter === '全部' ? '其他' : categoryFilter

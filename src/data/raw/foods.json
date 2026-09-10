@@ -1,31 +1,1265 @@
 [
-  {"id":"F01","name":"鲜鸡蛋","servingAmount":1,"servingUnit":"个","gramsPerUnit":50,"calories":143,"protein":12.6,"proteinType":"动物","fat":9.9,"carbs":1.3,"fiber":null,"fattyAcids":{"saturated":3.2,"omega9":4.0,"omega6":1.4,"omega3":null},"micronutrients":{"vitaminA":234,"vitaminD":2.0,"vitaminE":1.84,"vitaminB12":1.13,"folate":114,"iron":2.0,"zinc":1.33,"selenium":14.3,"calcium":56,"phosphorus":130,"potassium":138,"magnesium":10,"sodium":131},"tendency":["早餐","午餐","晚餐"],"rules":["早餐首选"],"rawDescription":"单次量1枚50g；营养值统一基准为每100g可食用部。","dataGaps":["fiber","omega3"]},
-  {"id":"F02","name":"特级初榨橄榄油","servingAmount":10,"servingUnit":"g","calories":899,"protein":0,"proteinType":null,"fat":99.9,"carbs":0,"fiber":0,"fattyAcids":{"saturated":14,"omega9":72,"omega6":14,"omega3":null},"micronutrients":{"vitaminE":14.35,"vitaminK":62},"tendency":["早餐","午餐","晚餐"],"rules":["早凉拌","午低温炒","晚餐仅凉拌","禁高温爆炒"],"rawDescription":"单次量10g；橄榄油为脂肪主力。","dataGaps":["omega3"]},
-  {"id":"F03","name":"核桃","servingAmount":30,"servingUnit":"g","calories":654,"protein":15.2,"proteinType":"植物","fat":65.2,"carbs":13.7,"fiber":6.7,"fattyAcids":{"saturated":6.1,"omega9":24.7,"omega6":null,"omega3":null},"micronutrients":{"vitaminE":4.31,"vitaminB1":0.39,"vitaminB6":0.54,"folate":98,"magnesium":158,"phosphorus":346,"potassium":441,"calcium":98,"zinc":2.73,"iron":2.91,"copper":1.59,"manganese":3.41,"selenium":4.9},"tendency":["早餐","午餐","坚果"],"rules":["早15g+午15g","晚间禁食"],"rawDescription":"单次量30g/日；多不饱和脂肪34.4g，含ω3。","dataGaps":["omega6精确值","omega3精确值"]},
-  {"id":"F04","name":"开心果","servingAmount":30,"servingUnit":"g","calories":614,"protein":20.2,"proteinType":"植物","fat":45.3,"carbs":27.9,"fiber":10.3,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminB6":null,"vitaminE":null,"potassium":null,"magnesium":null,"copper":null},"tendency":["早餐","日间加餐","坚果"],"rules":["晚间禁食"],"rawDescription":"单次量30g/日；关键微量为B6、E、钾、镁、铜。","dataGaps":["脂肪酸细分","微量元素数值"]},
-  {"id":"F05","name":"巴旦木(杏仁)","servingAmount":30,"servingUnit":"g","calories":603,"protein":21.2,"proteinType":"植物","fat":50.6,"carbs":21.7,"fiber":11.6,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminE":null,"calcium":null,"iron":null,"zinc":null},"tendency":["早餐","坚果"],"rules":["晚间禁食"],"rawDescription":"单次量30g/日；高维生素E、钙、铁、锌。","dataGaps":["脂肪酸细分","微量元素数值"]},
-  {"id":"F06","name":"腰果","servingAmount":30,"servingUnit":"g","calories":559,"protein":18.2,"proteinType":"植物","fat":44.8,"carbs":30.2,"fiber":null,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"zinc":null,"copper":null,"magnesium":null},"tendency":["午餐","日间加餐","坚果"],"rules":["午餐后加餐","晚间禁食"],"rawDescription":"单次量30g/日；高锌、铜、镁。","dataGaps":["fiber","脂肪酸细分","微量元素数值"]},
-  {"id":"F07","name":"榛子","servingAmount":30,"servingUnit":"g","calories":628,"protein":14.9,"proteinType":"植物","fat":60.8,"carbs":16.7,"fiber":9.7,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminE":null,"manganese":null,"magnesium":null},"tendency":["早餐","坚果"],"rules":["晚间禁食"],"rawDescription":"单次量30g/日；高维生素E、锰、镁。","dataGaps":["脂肪酸细分","微量元素数值"]},
-  {"id":"F08","name":"三文鱼","servingAmount":150,"servingUnit":"g","calories":139,"protein":20.4,"proteinType":"动物","fat":6.3,"carbs":0,"fiber":0,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminD":11,"vitaminB12":3.2,"niacin":8.6,"vitaminA":54,"selenium":36.5,"zinc":0.64,"potassium":360,"phosphorus":250},"tendency":["午餐"],"rules":["每周2次"],"rawDescription":"单次量150g/餐；脂肪含EPA+DHA ω3，未给精确值。","dataGaps":["EPA+DHA精确值","脂肪酸细分"]},
-  {"id":"F09","name":"去皮鸡胸肉","servingAmount":160,"servingUnit":"g","calories":118,"protein":23,"proteinType":"动物","fat":2.6,"carbs":0,"fiber":0,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"iron":0.6,"zinc":0.5,"selenium":11.7,"potassium":250},"tendency":["午餐"],"rules":["午餐主力"],"rawDescription":"单次量160g/餐。","dataGaps":["B族分项","脂肪酸细分"]},
-  {"id":"F10","name":"去皮鸡腿肉","servingAmount":100,"servingUnit":"g","calories":172,"protein":21,"proteinType":"动物","fat":8.5,"carbs":0,"fiber":0,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"iron":null,"zinc":null},"tendency":["午餐"],"rules":[],"rawDescription":"单次量100g；血红素铁、锌高于鸡胸。","dataGaps":["铁数值","锌数值","脂肪酸细分"]},
-  {"id":"F11","name":"瘦猪牛里脊","servingAmount":100,"servingUnit":"g","calories":125,"protein":22,"proteinType":"动物","fat":4,"carbs":0,"fiber":0,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"iron":2.8,"zinc":4.7,"selenium":10,"vitaminB12":null},"tendency":["午餐","晚餐"],"rules":["优先午餐","晚餐少量"],"rawDescription":"单次量100g。","dataGaps":["B12数值","脂肪酸细分"]},
-  {"id":"F12","name":"白灼鲜虾","servingAmount":100,"servingUnit":"g","calories":80,"protein":18.6,"proteinType":"动物","fat":0.8,"carbs":0,"fiber":0,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"selenium":47,"calcium":90,"iodine":null,"zinc":null},"tendency":["晚餐"],"rules":["晚餐优选"],"rawDescription":"单次量100g。","dataGaps":["碘数值","锌数值","脂肪酸细分"]},
-  {"id":"F13","name":"北豆腐","servingAmount":120,"servingUnit":"g","calories":85,"protein":8.1,"proteinType":"植物","fat":3.7,"carbs":4.2,"fiber":0.4,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"calcium":105,"magnesium":50,"iron":1.5,"zinc":0.47,"selenium":2.3},"tendency":["晚餐"],"rules":["晚餐核心"],"rawDescription":"单次量120g/餐。","dataGaps":["脂肪酸细分"]},
-  {"id":"F14","name":"熟糙米饭","servingAmount":150,"servingUnit":"g","calories":116,"protein":2.6,"proteinType":"植物","fat":0.3,"carbs":25.6,"fiber":1.1,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"magnesium":35,"potassium":75,"iron":0.4,"zinc":0.3},"tendency":["早餐","午餐","晚餐"],"rules":["午餐足量","早少量","晚减量","按克独立计算"],"rawDescription":"单次量150g/午餐；午晚不同量非整数倍。","dataGaps":["B族分项","脂肪酸细分"]},
-  {"id":"F15","name":"干燕麦片","servingAmount":40,"servingUnit":"g","calories":389,"protein":13,"proteinType":"植物","fat":7,"carbs":67,"fiber":10.6,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"magnesium":130,"iron":5,"zinc":2.6},"tendency":["早餐"],"rules":["专属早餐"],"rawDescription":"单次量40g/早餐。","dataGaps":["脂肪酸细分"]},
-  {"id":"F16","name":"熟藜麦","servingAmount":100,"servingUnit":"g","calories":120,"protein":4.4,"proteinType":"植物","fat":null,"carbs":21,"fiber":null,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"magnesium":null,"zinc":null,"iron":null},"tendency":["午餐"],"rules":[],"rawDescription":"单次量100g；优质植物蛋白、镁、锌、铁。","dataGaps":["fat","fiber","脂肪酸细分","微量元素数值"]},
-  {"id":"F17","name":"煮熟杂豆","servingAmount":100,"servingUnit":"g","calories":110,"protein":7,"proteinType":"植物","fat":null,"carbs":20,"fiber":6,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"potassium":null,"magnesium":null,"iron":null},"tendency":["午餐"],"rules":["混入杂粮饭"],"rawDescription":"单次量100g；高钾、镁、铁。","dataGaps":["fat","脂肪酸细分","微量元素数值"]},
-  {"id":"F18","name":"蒸红薯","servingAmount":80,"servingUnit":"g","calories":90,"protein":1.6,"proteinType":"植物","fat":null,"carbs":20,"fiber":2.3,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminC":null,"potassium":130},"tendency":["早餐","晚餐"],"rules":["早少量","晚替代精米"],"rawDescription":"单次量80g/晚餐。","dataGaps":["fat","维生素C数值","脂肪酸细分"]},
-  {"id":"F19","name":"蒸山药","servingAmount":100,"servingUnit":"g","calories":57,"protein":1.9,"proteinType":"植物","fat":null,"carbs":12,"fiber":null,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"potassium":null},"tendency":["晚餐"],"rules":[],"rawDescription":"单次量100g；高钾易消化。","dataGaps":["fat","fiber","钾数值","脂肪酸细分"]},
-  {"id":"F20","name":"全麦面包","servingAmount":1,"servingUnit":"片","gramsPerUnit":40,"calories":250,"protein":9,"proteinType":"植物","fat":null,"carbs":45,"fiber":6,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"magnesium":null,"iron":null,"zinc":null},"tendency":["早餐"],"rules":["专属早餐","按片计"],"rawDescription":"单次量1片40g。","dataGaps":["fat","B族分项","微量元素数值","脂肪酸细分"]},
-  {"id":"F21","name":"油麦菜/菠菜","servingAmount":100,"servingUnit":"g","calories":20,"protein":1.4,"proteinType":"植物","fat":null,"carbs":3.8,"fiber":1.9,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminC":32,"vitaminK":null,"potassium":220,"magnesium":58,"iron":2.9,"calcium":66},"tendency":["早餐","午餐","晚餐"],"rules":["早生吃","午清炒","晚凉拌","草酸类焯水"],"rawDescription":"单次量不限；以100g作为折算基准。","dataGaps":["fat","维生素K数值","脂肪酸细分"]},
-  {"id":"F22","name":"黄瓜","servingAmount":100,"servingUnit":"g","calories":16,"protein":null,"proteinType":null,"fat":null,"carbs":null,"fiber":null,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"potassium":147},"tendency":["早餐","午餐","晚餐"],"rules":["生吃或凉拌"],"rawDescription":"单次量不限；高水分。","dataGaps":["protein","fat","carbs","fiber","脂肪酸细分"]},
-  {"id":"F23","name":"西红柿","servingAmount":100,"servingUnit":"g","calories":18,"protein":null,"proteinType":null,"fat":null,"carbs":null,"fiber":null,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminC":19,"potassium":210},"tendency":["早餐","午餐","晚餐"],"rules":[],"rawDescription":"单次量不限；番茄红素。","dataGaps":["protein","fat","carbs","fiber","脂肪酸细分"]},
-  {"id":"F24","name":"鲜菌菇","servingAmount":100,"servingUnit":"g","calories":26,"protein":2.2,"proteinType":"植物","fat":null,"carbs":null,"fiber":2.3,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"selenium":null,"potassium":null},"tendency":["午餐","晚餐"],"rules":["烹饪食用"],"rawDescription":"单次量100g；含硒、钾、B族。","dataGaps":["fat","carbs","硒数值","钾数值","B族分项","脂肪酸细分"]},
-  {"id":"F25","name":"苹果","servingAmount":100,"servingUnit":"g","calories":52,"protein":null,"proteinType":null,"fat":null,"carbs":14,"fiber":2.4,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminC":null,"potassium":107},"tendency":["日间加餐"],"rules":["上午或训练前","晚餐禁用"],"rawDescription":"单次量100g。","dataGaps":["protein","fat","维生素C数值","脂肪酸细分"]},
-  {"id":"F26","name":"橙子","servingAmount":100,"servingUnit":"g","calories":47,"protein":null,"proteinType":null,"fat":null,"carbs":null,"fiber":null,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminC":33,"potassium":181},"tendency":["日间加餐"],"rules":["晚餐禁用"],"rawDescription":"单次量100g。","dataGaps":["protein","fat","carbs","fiber","脂肪酸细分"]},
-  {"id":"F27","name":"蓝莓","servingAmount":100,"servingUnit":"g","calories":57,"protein":null,"proteinType":null,"fat":null,"carbs":null,"fiber":null,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"vitaminC":null,"manganese":0.3},"tendency":["日间加餐"],"rules":["晚餐禁用"],"rawDescription":"单次量100g；含花青素。","dataGaps":["protein","fat","carbs","fiber","维生素C数值","脂肪酸细分"]},
-  {"id":"F28","name":"无糖希腊酸奶","servingAmount":1,"servingUnit":"杯","gramsPerUnit":200,"calories":70,"protein":10,"proteinType":"动物","fat":0.5,"carbs":3,"fiber":0,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"calcium":110,"phosphorus":90,"zinc":0.4},"tendency":["早餐"],"rules":["早餐专用","1杯按200g"],"rawDescription":"单次量200g/早餐；营养值基准按每100g。","dataGaps":["脂肪酸细分"]},
-  {"id":"F29","name":"葱姜蒜黑胡椒","servingAmount":0,"servingUnit":"适量","calories":0,"protein":null,"proteinType":null,"fat":null,"carbs":null,"fiber":null,"fattyAcids":{"saturated":null,"omega9":null,"omega6":null,"omega3":null},"micronutrients":{"potassium":null,"magnesium":null},"tendency":["早餐","午餐","晚餐"],"rules":["禁白砂糖","禁重盐","禁工业酱料"],"rawDescription":"适量；热量约0，含多酚抗氧化。","dataGaps":["全部定量营养数据"]}
+ {
+  "id": "F01",
+  "name": "鲜鸡蛋",
+  "servingAmount": 1,
+  "servingUnit": "个",
+  "gramsPerUnit": 50,
+  "calories": 143,
+  "protein": 12.6,
+  "proteinType": "动物",
+  "fat": 9.9,
+  "carbs": 1.3,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": 3.2,
+   "omega9": 4.0,
+   "omega6": 1.4,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminA": 234,
+   "vitaminD": 2.0,
+   "vitaminE": 1.84,
+   "vitaminB12": 1.13,
+   "folate": 114,
+   "iron": 2.0,
+   "zinc": 1.33,
+   "selenium": 14.3,
+   "calcium": 56,
+   "phosphorus": 130,
+   "potassium": 138,
+   "magnesium": 10,
+   "sodium": 131
+  },
+  "tendency": [
+   "早餐",
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [
+   "早餐首选"
+  ],
+  "rawDescription": "单次量1枚50g；营养值统一基准为每100g可食用部。",
+  "dataGaps": [
+   "fiber",
+   "omega3"
+  ],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F02",
+  "name": "特级初榨橄榄油",
+  "servingAmount": 10,
+  "servingUnit": "g",
+  "calories": 899,
+  "protein": 0,
+  "proteinType": null,
+  "fat": 99.9,
+  "carbs": 0,
+  "fiber": 0,
+  "fattyAcids": {
+   "saturated": 14,
+   "omega9": 72,
+   "omega6": 14,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminE": 14.35,
+   "vitaminK": 62
+  },
+  "tendency": [
+   "早餐",
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [
+   "早凉拌",
+   "午低温炒",
+   "晚餐仅凉拌",
+   "禁高温爆炒"
+  ],
+  "rawDescription": "单次量10g；橄榄油为脂肪主力。",
+  "dataGaps": [
+   "omega3"
+  ]
+ },
+ {
+  "id": "F03",
+  "name": "核桃",
+  "servingAmount": 30,
+  "servingUnit": "g",
+  "calories": 654,
+  "protein": 15.2,
+  "proteinType": "植物",
+  "fat": 65.2,
+  "carbs": 13.7,
+  "fiber": 6.7,
+  "fattyAcids": {
+   "saturated": 6.1,
+   "omega9": 24.7,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminE": 4.31,
+   "vitaminB1": 0.39,
+   "vitaminB6": 0.54,
+   "folate": 98,
+   "magnesium": 158,
+   "phosphorus": 346,
+   "potassium": 441,
+   "calcium": 98,
+   "zinc": 2.73,
+   "iron": 2.91,
+   "copper": 1.59,
+   "manganese": 3.41,
+   "selenium": 4.9
+  },
+  "tendency": [
+   "早餐",
+   "午餐",
+   "坚果"
+  ],
+  "rules": [
+   "早15g+午15g",
+   "晚间禁食"
+  ],
+  "rawDescription": "单次量30g/日；多不饱和脂肪34.4g，含ω3。",
+  "dataGaps": [
+   "omega6精确值",
+   "omega3精确值"
+  ]
+ },
+ {
+  "id": "F04",
+  "name": "开心果",
+  "servingAmount": 30,
+  "servingUnit": "g",
+  "calories": 614,
+  "protein": 20.2,
+  "proteinType": "植物",
+  "fat": 45.3,
+  "carbs": 27.9,
+  "fiber": 10.3,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminB6": null,
+   "vitaminE": null,
+   "potassium": null,
+   "magnesium": null,
+   "copper": null
+  },
+  "tendency": [
+   "早餐",
+   "日间加餐",
+   "坚果"
+  ],
+  "rules": [
+   "晚间禁食"
+  ],
+  "rawDescription": "单次量30g/日；关键微量为B6、E、钾、镁、铜。",
+  "dataGaps": [
+   "脂肪酸细分",
+   "微量元素数值"
+  ]
+ },
+ {
+  "id": "F05",
+  "name": "巴旦木(杏仁)",
+  "servingAmount": 30,
+  "servingUnit": "g",
+  "calories": 603,
+  "protein": 21.2,
+  "proteinType": "植物",
+  "fat": 50.6,
+  "carbs": 21.7,
+  "fiber": 11.6,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminE": null,
+   "calcium": null,
+   "iron": null,
+   "zinc": null
+  },
+  "tendency": [
+   "早餐",
+   "坚果"
+  ],
+  "rules": [
+   "晚间禁食"
+  ],
+  "rawDescription": "单次量30g/日；高维生素E、钙、铁、锌。",
+  "dataGaps": [
+   "脂肪酸细分",
+   "微量元素数值"
+  ]
+ },
+ {
+  "id": "F06",
+  "name": "腰果",
+  "servingAmount": 30,
+  "servingUnit": "g",
+  "calories": 559,
+  "protein": 18.2,
+  "proteinType": "植物",
+  "fat": 44.8,
+  "carbs": 30.2,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "zinc": null,
+   "copper": null,
+   "magnesium": null
+  },
+  "tendency": [
+   "午餐",
+   "日间加餐",
+   "坚果"
+  ],
+  "rules": [
+   "午餐后加餐",
+   "晚间禁食"
+  ],
+  "rawDescription": "单次量30g/日；高锌、铜、镁。",
+  "dataGaps": [
+   "fiber",
+   "脂肪酸细分",
+   "微量元素数值"
+  ]
+ },
+ {
+  "id": "F07",
+  "name": "榛子",
+  "servingAmount": 30,
+  "servingUnit": "g",
+  "calories": 628,
+  "protein": 14.9,
+  "proteinType": "植物",
+  "fat": 60.8,
+  "carbs": 16.7,
+  "fiber": 9.7,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminE": null,
+   "manganese": null,
+   "magnesium": null
+  },
+  "tendency": [
+   "早餐",
+   "坚果"
+  ],
+  "rules": [
+   "晚间禁食"
+  ],
+  "rawDescription": "单次量30g/日；高维生素E、锰、镁。",
+  "dataGaps": [
+   "脂肪酸细分",
+   "微量元素数值"
+  ]
+ },
+ {
+  "id": "F08",
+  "name": "三文鱼",
+  "servingAmount": 150,
+  "servingUnit": "g",
+  "calories": 139,
+  "protein": 20.4,
+  "proteinType": "动物",
+  "fat": 6.3,
+  "carbs": 0,
+  "fiber": 0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminD": 11,
+   "vitaminB12": 3.2,
+   "niacin": 8.6,
+   "vitaminA": 54,
+   "selenium": 36.5,
+   "zinc": 0.64,
+   "potassium": 360,
+   "phosphorus": 250
+  },
+  "tendency": [
+   "午餐"
+  ],
+  "rules": [
+   "每周2次"
+  ],
+  "rawDescription": "单次量150g/餐；脂肪含EPA+DHA ω3，未给精确值。",
+  "dataGaps": [
+   "EPA+DHA精确值",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F09",
+  "name": "去皮鸡胸肉",
+  "servingAmount": 160,
+  "servingUnit": "g",
+  "calories": 118,
+  "protein": 23,
+  "proteinType": "动物",
+  "fat": 2.6,
+  "carbs": 0,
+  "fiber": 0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "iron": 0.6,
+   "zinc": 0.5,
+   "selenium": 11.7,
+   "potassium": 250
+  },
+  "tendency": [
+   "午餐"
+  ],
+  "rules": [
+   "午餐主力"
+  ],
+  "rawDescription": "单次量160g/餐。",
+  "dataGaps": [
+   "B族分项",
+   "脂肪酸细分"
+  ],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F10",
+  "name": "去皮鸡腿肉",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 172,
+  "protein": 21,
+  "proteinType": "动物",
+  "fat": 8.5,
+  "carbs": 0,
+  "fiber": 0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "iron": null,
+   "zinc": null
+  },
+  "tendency": [
+   "午餐"
+  ],
+  "rules": [],
+  "rawDescription": "单次量100g；血红素铁、锌高于鸡胸。",
+  "dataGaps": [
+   "铁数值",
+   "锌数值",
+   "脂肪酸细分"
+  ],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F11",
+  "name": "瘦猪牛里脊",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 125,
+  "protein": 22,
+  "proteinType": "动物",
+  "fat": 4,
+  "carbs": 0,
+  "fiber": 0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "iron": 2.8,
+   "zinc": 4.7,
+   "selenium": 10,
+   "vitaminB12": null
+  },
+  "tendency": [
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [
+   "优先午餐",
+   "晚餐少量"
+  ],
+  "rawDescription": "单次量100g。",
+  "dataGaps": [
+   "B12数值",
+   "脂肪酸细分"
+  ],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F12",
+  "name": "白灼鲜虾",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 80,
+  "protein": 18.6,
+  "proteinType": "动物",
+  "fat": 0.8,
+  "carbs": 0,
+  "fiber": 0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "selenium": 47,
+   "calcium": 90,
+   "iodine": null,
+   "zinc": null
+  },
+  "tendency": [
+   "晚餐"
+  ],
+  "rules": [
+   "晚餐优选"
+  ],
+  "rawDescription": "单次量100g。",
+  "dataGaps": [
+   "碘数值",
+   "锌数值",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F13",
+  "name": "北豆腐",
+  "servingAmount": 120,
+  "servingUnit": "g",
+  "calories": 85,
+  "protein": 8.1,
+  "proteinType": "植物",
+  "fat": 3.7,
+  "carbs": 4.2,
+  "fiber": 0.4,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "calcium": 105,
+   "magnesium": 50,
+   "iron": 1.5,
+   "zinc": 0.47,
+   "selenium": 2.3
+  },
+  "tendency": [
+   "晚餐"
+  ],
+  "rules": [
+   "晚餐核心"
+  ],
+  "rawDescription": "单次量120g/餐。",
+  "dataGaps": [
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F14",
+  "name": "熟糙米饭",
+  "servingAmount": 150,
+  "servingUnit": "g",
+  "calories": 116,
+  "protein": 2.6,
+  "proteinType": "植物",
+  "fat": 0.3,
+  "carbs": 25.6,
+  "fiber": 1.1,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "magnesium": 35,
+   "potassium": 75,
+   "iron": 0.4,
+   "zinc": 0.3
+  },
+  "tendency": [
+   "早餐",
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [
+   "午餐足量",
+   "早少量",
+   "晚减量",
+   "按克独立计算"
+  ],
+  "rawDescription": "单次量150g/午餐；午晚不同量非整数倍。",
+  "dataGaps": [
+   "B族分项",
+   "脂肪酸细分"
+  ],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F15",
+  "name": "干燕麦片",
+  "servingAmount": 40,
+  "servingUnit": "g",
+  "calories": 389,
+  "protein": 13,
+  "proteinType": "植物",
+  "fat": 7,
+  "carbs": 67,
+  "fiber": 10.6,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "magnesium": 130,
+   "iron": 5,
+   "zinc": 2.6
+  },
+  "tendency": [
+   "早餐"
+  ],
+  "rules": [
+   "专属早餐"
+  ],
+  "rawDescription": "单次量40g/早餐。",
+  "dataGaps": [
+   "脂肪酸细分"
+  ],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F16",
+  "name": "熟藜麦",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 120,
+  "protein": 4.4,
+  "proteinType": "植物",
+  "fat": null,
+  "carbs": 21,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "magnesium": null,
+   "zinc": null,
+   "iron": null
+  },
+  "tendency": [
+   "午餐"
+  ],
+  "rules": [],
+  "rawDescription": "单次量100g；优质植物蛋白、镁、锌、铁。",
+  "dataGaps": [
+   "fat",
+   "fiber",
+   "脂肪酸细分",
+   "微量元素数值"
+  ]
+ },
+ {
+  "id": "F17",
+  "name": "煮熟杂豆",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 110,
+  "protein": 7,
+  "proteinType": "植物",
+  "fat": null,
+  "carbs": 20,
+  "fiber": 6,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "potassium": null,
+   "magnesium": null,
+   "iron": null
+  },
+  "tendency": [
+   "午餐"
+  ],
+  "rules": [
+   "混入杂粮饭"
+  ],
+  "rawDescription": "单次量100g；高钾、镁、铁。",
+  "dataGaps": [
+   "fat",
+   "脂肪酸细分",
+   "微量元素数值"
+  ]
+ },
+ {
+  "id": "F18",
+  "name": "蒸红薯",
+  "servingAmount": 80,
+  "servingUnit": "g",
+  "calories": 90,
+  "protein": 1.6,
+  "proteinType": "植物",
+  "fat": null,
+  "carbs": 20,
+  "fiber": 2.3,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminC": null,
+   "potassium": 130
+  },
+  "tendency": [
+   "早餐",
+   "晚餐"
+  ],
+  "rules": [
+   "早少量",
+   "晚替代精米"
+  ],
+  "rawDescription": "单次量80g/晚餐。",
+  "dataGaps": [
+   "fat",
+   "维生素C数值",
+   "脂肪酸细分"
+  ],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F19",
+  "name": "蒸山药",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 57,
+  "protein": 1.9,
+  "proteinType": "植物",
+  "fat": null,
+  "carbs": 12,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "potassium": null
+  },
+  "tendency": [
+   "晚餐"
+  ],
+  "rules": [],
+  "rawDescription": "单次量100g；高钾易消化。",
+  "dataGaps": [
+   "fat",
+   "fiber",
+   "钾数值",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F20",
+  "name": "全麦面包",
+  "servingAmount": 1,
+  "servingUnit": "片",
+  "gramsPerUnit": 40,
+  "calories": 250,
+  "protein": 9,
+  "proteinType": "植物",
+  "fat": null,
+  "carbs": 45,
+  "fiber": 6,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "magnesium": null,
+   "iron": null,
+   "zinc": null
+  },
+  "tendency": [
+   "早餐"
+  ],
+  "rules": [
+   "专属早餐",
+   "按片计"
+  ],
+  "rawDescription": "单次量1片40g。",
+  "dataGaps": [
+   "fat",
+   "B族分项",
+   "微量元素数值",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F21",
+  "name": "油麦菜/菠菜",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 20,
+  "protein": 1.4,
+  "proteinType": "植物",
+  "fat": null,
+  "carbs": 3.8,
+  "fiber": 1.9,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminC": 32,
+   "vitaminK": null,
+   "potassium": 220,
+   "magnesium": 58,
+   "iron": 2.9,
+   "calcium": 66
+  },
+  "tendency": [
+   "早餐",
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [
+   "早生吃",
+   "午清炒",
+   "晚凉拌",
+   "草酸类焯水"
+  ],
+  "rawDescription": "单次量不限；以100g作为折算基准。",
+  "dataGaps": [
+   "fat",
+   "维生素K数值",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F22",
+  "name": "黄瓜",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 16,
+  "protein": null,
+  "proteinType": null,
+  "fat": null,
+  "carbs": null,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "potassium": 147
+  },
+  "tendency": [
+   "早餐",
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [
+   "生吃或凉拌"
+  ],
+  "rawDescription": "单次量不限；高水分。",
+  "dataGaps": [
+   "protein",
+   "fat",
+   "carbs",
+   "fiber",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F23",
+  "name": "西红柿",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 18,
+  "protein": null,
+  "proteinType": null,
+  "fat": null,
+  "carbs": null,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminC": 19,
+   "potassium": 210
+  },
+  "tendency": [
+   "早餐",
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [],
+  "rawDescription": "单次量不限；番茄红素。",
+  "dataGaps": [
+   "protein",
+   "fat",
+   "carbs",
+   "fiber",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F24",
+  "name": "鲜菌菇",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 26,
+  "protein": 2.2,
+  "proteinType": "植物",
+  "fat": null,
+  "carbs": null,
+  "fiber": 2.3,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "selenium": null,
+   "potassium": null
+  },
+  "tendency": [
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [
+   "烹饪食用"
+  ],
+  "rawDescription": "单次量100g；含硒、钾、B族。",
+  "dataGaps": [
+   "fat",
+   "carbs",
+   "硒数值",
+   "钾数值",
+   "B族分项",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F25",
+  "name": "苹果",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 52,
+  "protein": null,
+  "proteinType": null,
+  "fat": null,
+  "carbs": 14,
+  "fiber": 2.4,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminC": null,
+   "potassium": 107
+  },
+  "tendency": [
+   "日间加餐"
+  ],
+  "rules": [
+   "上午或训练前",
+   "晚餐禁用"
+  ],
+  "rawDescription": "单次量100g。",
+  "dataGaps": [
+   "protein",
+   "fat",
+   "维生素C数值",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F26",
+  "name": "橙子",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 47,
+  "protein": null,
+  "proteinType": null,
+  "fat": null,
+  "carbs": null,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminC": 33,
+   "potassium": 181
+  },
+  "tendency": [
+   "日间加餐"
+  ],
+  "rules": [
+   "晚餐禁用"
+  ],
+  "rawDescription": "单次量100g。",
+  "dataGaps": [
+   "protein",
+   "fat",
+   "carbs",
+   "fiber",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F27",
+  "name": "蓝莓",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "calories": 57,
+  "protein": null,
+  "proteinType": null,
+  "fat": null,
+  "carbs": null,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "vitaminC": null,
+   "manganese": 0.3
+  },
+  "tendency": [
+   "日间加餐"
+  ],
+  "rules": [
+   "晚餐禁用"
+  ],
+  "rawDescription": "单次量100g；含花青素。",
+  "dataGaps": [
+   "protein",
+   "fat",
+   "carbs",
+   "fiber",
+   "维生素C数值",
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F28",
+  "name": "无糖希腊酸奶",
+  "servingAmount": 1,
+  "servingUnit": "杯",
+  "gramsPerUnit": 200,
+  "calories": 70,
+  "protein": 10,
+  "proteinType": "动物",
+  "fat": 0.5,
+  "carbs": 3,
+  "fiber": 0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "calcium": 110,
+   "phosphorus": 90,
+   "zinc": 0.4
+  },
+  "tendency": [
+   "早餐"
+  ],
+  "rules": [
+   "早餐专用",
+   "1杯按200g"
+  ],
+  "rawDescription": "单次量200g/早餐；营养值基准按每100g。",
+  "dataGaps": [
+   "脂肪酸细分"
+  ]
+ },
+ {
+  "id": "F29",
+  "name": "葱姜蒜黑胡椒",
+  "servingAmount": 0,
+  "servingUnit": "适量",
+  "calories": 0,
+  "protein": null,
+  "proteinType": null,
+  "fat": null,
+  "carbs": null,
+  "fiber": null,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {
+   "potassium": null,
+   "magnesium": null
+  },
+  "tendency": [
+   "早餐",
+   "午餐",
+   "晚餐"
+  ],
+  "rules": [
+   "禁白砂糖",
+   "禁重盐",
+   "禁工业酱料"
+  ],
+  "rawDescription": "适量；热量约0，含多酚抗氧化。",
+  "dataGaps": [
+   "全部定量营养数据"
+  ]
+ },
+ {
+  "id": "F30",
+  "name": "生米（生）",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "gramsPerUnit": null,
+  "calories": 346,
+  "protein": 7.4,
+  "proteinType": "植物",
+  "fat": 0.8,
+  "carbs": 77.2,
+  "fiber": 0.4,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {},
+  "tendency": [],
+  "rules": [],
+  "rawDescription": "生米，煮前称重；熟重约×2.5。",
+  "dataGaps": [],
+  "sourceName": "9月计划·标准值",
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F31",
+  "name": "土豆",
+  "servingAmount": 100,
+  "servingUnit": "g",
+  "gramsPerUnit": null,
+  "calories": 77,
+  "protein": 2.0,
+  "proteinType": "植物",
+  "fat": 0.1,
+  "carbs": 17.2,
+  "fiber": 1.0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {},
+  "tendency": [],
+  "rules": [],
+  "rawDescription": "土豆，蒸/煮。",
+  "dataGaps": [],
+  "sourceName": "9月计划·标准值",
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F32",
+  "name": "动物黄油",
+  "servingAmount": 10,
+  "servingUnit": "g",
+  "gramsPerUnit": null,
+  "calories": 717,
+  "protein": 0.9,
+  "proteinType": "动物",
+  "fat": 81.0,
+  "carbs": 0.1,
+  "fiber": 0.0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {},
+  "tendency": [],
+  "rules": [],
+  "rawDescription": "动物黄油，烹饪或直接食用。",
+  "dataGaps": [],
+  "sourceName": "9月计划·标准值",
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F33",
+  "name": "葡萄糖粉",
+  "servingAmount": 10,
+  "servingUnit": "g",
+  "gramsPerUnit": null,
+  "calories": 400,
+  "protein": 0.0,
+  "proteinType": null,
+  "fat": 0.0,
+  "carbs": 100.0,
+  "fiber": 0.0,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {},
+  "tendency": [],
+  "rules": [],
+  "rawDescription": "葡萄糖粉剂，训练前后冲水。",
+  "dataGaps": [],
+  "sourceName": "9月计划·标准值",
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F34",
+  "name": "香蕉",
+  "servingAmount": 1,
+  "servingUnit": "根",
+  "gramsPerUnit": 100,
+  "calories": 89,
+  "protein": 1.1,
+  "proteinType": "植物",
+  "fat": 0.3,
+  "carbs": 22.8,
+  "fiber": 2.6,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {},
+  "tendency": [],
+  "rules": [],
+  "rawDescription": "中号香蕉约100g。",
+  "dataGaps": [],
+  "sourceName": "9月计划·标准值",
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "F35",
+  "name": "柚子",
+  "servingAmount": 200,
+  "servingUnit": "g",
+  "gramsPerUnit": null,
+  "calories": 41,
+  "protein": 0.8,
+  "proteinType": "植物",
+  "fat": 0.2,
+  "carbs": 9.5,
+  "fiber": 0.4,
+  "fattyAcids": {
+   "saturated": null,
+   "omega9": null,
+   "omega6": null,
+   "omega3": null
+  },
+  "micronutrients": {},
+  "tendency": [],
+  "rules": [],
+  "rawDescription": "柚子，训练前水果。",
+  "dataGaps": [],
+  "sourceName": "9月计划·标准值",
+  "tags": [
+   "9月"
+  ]
+ }
 ]

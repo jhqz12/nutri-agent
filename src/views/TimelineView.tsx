@@ -21,11 +21,20 @@ const emptyItem: Omit<ScheduleItem, 'id'> = {
 interface TimelineEntry {
   id: string
   time: string
+  slot: string
   title: string
   category: ScheduleItem['category']
   notes: string
   amountLabel: string
   source: 'dailyplan' | 'life'
+  done: boolean
+}
+
+interface TimelineGroup {
+  key: string
+  slot: string
+  time: string
+  entries: TimelineEntry[]
   done: boolean
 }
 
@@ -53,7 +62,7 @@ export function TimelineView() {
   const target = referenceFormula ? calculateMacro(nutritionState, referenceFormula) : result.macro
 
   const planItems = useMemo(() => activePlan ? materializeItems(activePlan, mode, randomSeed) : [], [activePlan, mode, randomSeed])
-  const planNutrition = useMemo(() => activePlan ? analyzePlanNutrition(activePlan) : null, [activePlan])
+  const planNutrition = useMemo(() => activePlan ? analyzePlanNutrition(activePlan, libraries.foods, libraries.supplements) : null, [activePlan, libraries.foods, libraries.supplements])
 
   const summary = mealSource === 'auto'
     ? { calories: Math.round(result.actual.calories), protein: result.actual.protein, fat: result.actual.fat, carbs: result.actual.carbs }
@@ -73,7 +82,7 @@ export function TimelineView() {
         const isDone = checkedRows.has(row.id)
         const amountLabel = entry.item.kind === '全天' ? `${entry.item.amount}${entry.item.unit} · 全天` : `${entry.item.amount}${entry.item.unit}`
         list.push({
-          id: row.id, time: row.time, title: `${entry.item.label}·${entry.displayName}`, category: row.category,
+          id: row.id, time: row.time, slot: entry.item.label, title: entry.displayName, category: row.category,
           notes: entry.item.note, amountLabel, source: 'dailyplan', done: isDone
         })
       }
@@ -84,32 +93,50 @@ export function TimelineView() {
           const food = libraries.foods.find((item) => item.id === menuEntry.foodId)
           const rowId = `auto-${dayType}-${meal}-${menuEntry.foodId}`
           list.push({
-            id: rowId, time: '12:00', title: `${meal}·${food?.name ?? '食材缺失'}`, category: '饮食',
+            id: rowId, time: '12:00', slot: meal, title: food?.name ?? '食材缺失', category: '饮食',
             notes: '', amountLabel: `${menuEntry.amount}${menuEntry.unit}`, source: 'dailyplan', done: checkedRows.has(rowId)
           })
         }
       }
-      // 自动配餐仍保留补剂/训练项
       for (const entry of planItems.filter((entry) => entry.item.kind === '补剂' || entry.item.kind === '训练')) {
         const row = buildScheduleRow(entry, dayType)
         list.push({
-          id: row.id, time: row.time, title: `${entry.item.label}·${entry.displayName}`, category: row.category,
+          id: row.id, time: row.time, slot: entry.item.label, title: entry.displayName, category: row.category,
           notes: entry.item.note, amountLabel: `${entry.item.amount}${entry.item.unit}`, source: 'dailyplan', done: checkedRows.has(row.id)
         })
       }
     }
     for (const item of lifeItems) {
       list.push({
-        id: item.id, time: item.time, title: item.title, category: item.category,
+        id: item.id, time: item.time, slot: item.category, title: item.title, category: item.category,
         notes: item.notes, amountLabel: item.durationMinutes ? `${item.durationMinutes}分钟` : '', source: 'life', done: item.completed
       })
     }
     return list.sort((a, b) => a.time.localeCompare(b.time))
   }, [planItems, lifeItems, mealSource, activePlan, dayType, checkedRows, result.menu, libraries.foods])
 
-  const pending = entries.filter((entry) => !entry.done)
-  const done = entries.filter((entry) => entry.done)
-  const doneCount = done.length
+  // 按时段（label）分组合并：同段多个食材/补剂放在一个框里
+  const groups = useMemo<TimelineGroup[]>(() => {
+    const map = new Map<string, TimelineGroup>()
+    for (const entry of entries) {
+      const key = entry.slot
+      if (!map.has(key)) {
+        map.set(key, { key, slot: entry.slot, time: entry.time, entries: [], done: false })
+      }
+      map.get(key)!.entries.push(entry)
+    }
+    return [...map.values()].map((group) => {
+      group.entries.sort((a, b) => a.time.localeCompare(b.time))
+      group.time = group.entries[0]?.time ?? '00:00'
+      group.done = group.entries.every((entry) => entry.done)
+      return group
+    }).sort((a, b) => a.time.localeCompare(b.time))
+  }, [entries])
+
+  const pendingGroups = groups.filter((group) => !group.done)
+  const doneGroups = groups.filter((group) => group.done)
+  const doneCount = doneGroups.reduce((sum, group) => sum + group.entries.length, 0)
+  const totalCount = entries.length
 
   const toggleEntry = (entry: TimelineEntry) => {
     if (entry.source === 'dailyplan') {
@@ -161,7 +188,6 @@ export function TimelineView() {
         <div className="daily-plan-row-main">
           <strong>{entry.title}</strong>
           <span>{entry.amountLabel}</span>
-          {entry.category === '饮食' && summary && <em className="kcal-tag">{entry.id.startsWith('auto') ? '' : ''}</em>}
         </div>
         {entry.notes && <p className="timeline-notes">{entry.notes}</p>}
       </div>
@@ -174,12 +200,22 @@ export function TimelineView() {
     </li>
   )
 
+  const renderGroup = (group: TimelineGroup) => (
+    <div className="daily-plan-slot" key={group.key}>
+      <div className="daily-plan-slot-head">
+        <strong>{group.slot}</strong>
+        {group.time !== '00:00' && <span>{group.time}</span>}
+      </div>
+      <ul className="timeline-list">{group.entries.map(renderEntry)}</ul>
+    </div>
+  )
+
   return (
     <div className="view-stack">
       <section className="summary-strip" aria-label="今日摘要">
         <div><span>当前计划</span><strong>{todayPlan.isRestDay ? '休息日' : `${todayPlan.plan?.name ?? '未设置'}日`}</strong></div>
-        <div><span>已完成</span><strong>{doneCount}/{entries.length}</strong></div>
-        <div><span>待完成</span><strong>{pending.length}</strong></div>
+        <div><span>已完成</span><strong>{doneCount}/{totalCount}</strong></div>
+        <div><span>待完成</span><strong>{pendingGroups.length}</strong></div>
         <button className="button primary" onClick={() => { setDraft(emptyItem); setEditing('new') }}><Plus size={16} />添加生活安排</button>
       </section>
 
@@ -225,8 +261,8 @@ export function TimelineView() {
         )}
 
         <div className="daily-plan-timeline">
-          {pending.length === 0 && <p className="empty-inline">今天的项目全部完成，做得好。</p>}
-          <ul className="timeline-list">{pending.map(renderEntry)}</ul>
+          {pendingGroups.length === 0 && <p className="empty-inline">今天的项目全部完成，做得好。</p>}
+          {pendingGroups.map(renderGroup)}
 
           {doneCount > 0 && (
             <div className="done-fold">
@@ -235,7 +271,7 @@ export function TimelineView() {
                 <span>已完成 {doneCount} 项</span>
                 <em className="done-count-dot" />
               </button>
-              {showDone && <ul className="timeline-list is-done-list">{done.map(renderEntry)}</ul>}
+              {showDone && doneGroups.map(renderGroup)}
             </div>
           )}
         </div>

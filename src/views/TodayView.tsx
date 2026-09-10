@@ -21,6 +21,7 @@ export function TodayView() {
   const currentChoice = todayPlan.isRestDay ? 'rest' : todayPlan.plan?.id ?? 'rest'
   const [dayChoice, setDayChoice] = useState(currentChoice)
   const [anchorNotice, setAnchorNotice] = useState('')
+  const [showAllMissing, setShowAllMissing] = useState(false)
   const result = useMemo(() => calculateEngine(nutritionState), [nutritionState])
   const lockedCount = Object.keys(result.supplementLocks).length
 
@@ -99,8 +100,11 @@ export function TodayView() {
     </section>
     <section className="today-risk-brief today-panel">
       <div className="section-heading"><div><h2>昨天缺失</h2><p>昨天没打卡完成的事项，今天提醒你补上。</p></div><History size={18} /></div>
-      {yesterdayMissing.map((item) => <div className="priority-row" key={item.id}><strong>昨天没做</strong><span>{item.title}</span></div>)}
+      {yesterdayMissing.slice(0, showAllMissing ? undefined : 3).map((item) => <div className="priority-row" key={item.id}><strong>昨天没做</strong><span>{item.title}</span></div>)}
       {!yesterdayMissing.length && <div className="priority-row ok"><strong>昨天全部完成</strong><span>没有遗漏的事项，继续保持。</span></div>}
+      {yesterdayMissing.length > 3 && (
+        <button className="button compact" onClick={() => setShowAllMissing((v) => !v)}>{showAllMissing ? '收起' : `展开全部 ${yesterdayMissing.length} 项`}</button>
+      )}
     </section>
     <TimelineView />
     <details className="advanced-panel today-nutrition-details">

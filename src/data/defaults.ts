@@ -15,41 +15,68 @@ const buildItem = (
   amount: number,
   unit: string,
   note: string,
-  macro: { protein: number; carbs: number; fat: number; calories: number } | null = null,
   locked = false
 ): DailyPlanItem => ({
   id, time, label, kind, foodName, amount, unit, note, locked,
   foodId: null, supplementId: null,
-  protein: macro?.protein ?? null,
-  carbs: macro?.carbs ?? null,
-  fat: macro?.fat ?? null,
-  calories: macro?.calories ?? null
+  protein: null, carbs: null, fat: null, calories: null
 })
 
 /**
  * 「9月」计划——用户根据自己的训练与饮食长期总结的自编计划（非谭成义模板）。
- * 每餐直接携带精确的蛋白质 / 碳水 / 脂肪 / 热量，营养分析不再按食物名反推，
- * 因此合计与用户手算表分毫不差。
- * 训练日合计：P151 · F26.6 · C376 · 2348 kcal；休息日：P136 · F33.4 · C311 · 2053 kcal。
+ * 食材级：每个食材一项，营养值从「食材库/补剂库」取（可在食材库单独改，日计划自动联动）。
+ * 同段（早餐/第二餐…）内多个食材用相同 label，展示时合并成一个框；蔬菜不限量，不体现。
  */
 const trainingDayItems: DailyPlanItem[] = [
-  buildItem('tdi-1', '07:00', '全天', '全天', '动物黄油 5g', 5, 'g', '烹饪或直接食用，全天总量', { protein: 0, carbs: 0, fat: 4.1, calories: 37 }, true),
-  buildItem('tdi-2', '07:30', '早餐', '饮食', '燕麦70g + 全蛋2个', 1, '份', '生重燕麦 + 两个全蛋', { protein: 21.7, carbs: 42.4, fat: 14.9, calories: 401 }),
-  buildItem('tdi-3', '11:30', '第二餐', '饮食', '红薯250g + 生米80g + 鸡胸120g', 1, '份', '主食红薯+生米，蛋白鸡胸', { protein: 42.5, carbs: 107.4, fat: 2.9, calories: 617 }),
-  buildItem('tdi-4', '15:30', '练前', '饮食', '肌酸5g + 葡萄糖10g', 1, '份', '训练前 20~30 分钟', { protein: 0, carbs: 10, fat: 0, calories: 40 }),
-  buildItem('tdi-5', '16:00', '练中', '饮食', '葡萄糖10g', 1, '份', '训练中分次补', { protein: 0, carbs: 10, fat: 0, calories: 40 }),
-  buildItem('tdi-6', '17:30', '练后', '饮食', '蛋白粉半勺 + 中号香蕉', 1, '份', '训练后补蛋白与碳水', { protein: 13.3, carbs: 27, fat: 0.4, calories: 170 }),
-  buildItem('tdi-7', '18:30', '第三餐', '饮食', '红薯250g + 生米80g + 鸡胸120g', 1, '份', '主食红薯+生米，蛋白鸡胸', { protein: 42.5, carbs: 107.4, fat: 2.9, calories: 617 }),
-  buildItem('tdi-8', '20:30', '第四餐', '饮食', '红薯200g + 鸡胸120g', 1, '份', '晚加餐，偏轻', { protein: 31, carbs: 72, fat: 1.4, calories: 426 })
+  buildItem('tdi-1', '07:00', '全天', '全天', '动物黄油', 5, 'g', '烹饪或直接食用，全天总量', true),
+  buildItem('tdi-2', '07:30', '醒后', '饮食', '发酵茶', 300, 'ml', '黑茶 / 红茶 / 乌龙茶三选一'),
+  buildItem('tdi-3', '07:30', '醒后', '补剂', '维生素C', 1, 'g', '随茶冲服'),
+  buildItem('tdi-4', '08:00', '早餐', '饮食', '燕麦', 70, 'g', '生重'),
+  buildItem('tdi-5', '08:00', '早餐', '饮食', '全蛋', 2, '个', '约 100g'),
+  buildItem('tdi-6', '08:00', '早餐', '补剂', '复合维生素B', 1, '片', '随餐'),
+  buildItem('tdi-7', '08:00', '早餐', '补剂', '维生素D', 2, '片', '随餐'),
+  buildItem('tdi-8', '11:30', '第二餐', '饮食', '红薯', 250, 'g', '二选一'),
+  buildItem('tdi-9', '11:30', '第二餐', '饮食', '生米', 80, 'g', '生重，熟重约×2.5'),
+  buildItem('tdi-10', '11:30', '第二餐', '饮食', '鸡胸', 120, 'g', '二选一'),
+  buildItem('tdi-11', '11:30', '第二餐', '补剂', '铬片', 1, '片', '随餐'),
+  buildItem('tdi-12', '15:30', '练前', '补剂', '肌酸', 5, 'g', '训练前 20~30 分钟'),
+  buildItem('tdi-13', '15:30', '练前', '饮食', '葡萄糖粉', 10, 'g', '配水冲服'),
+  buildItem('tdi-14', '16:00', '练中', '饮食', '葡萄糖粉', 10, 'g', '配 550ml 水，可多喝'),
+  buildItem('tdi-15', '17:30', '力量后', '补剂', '蛋白粉', 0.5, '勺', '半勺'),
+  buildItem('tdi-16', '17:30', '力量后', '饮食', '香蕉', 1, '根', '中号'),
+  buildItem('tdi-17', '17:30', '力量后', '补剂', '铬片', 1, '片', '力量训练后'),
+  buildItem('tdi-18', '18:00', '有氧', '训练', '单车或低强度有氧', 25, 'min', '心率不超过最大心率 70%'),
+  buildItem('tdi-19', '19:00', '第三餐', '饮食', '红薯', 250, 'g', '二选一'),
+  buildItem('tdi-20', '19:00', '第三餐', '饮食', '生米', 80, 'g', '生重'),
+  buildItem('tdi-21', '19:00', '第三餐', '饮食', '鸡胸', 120, 'g', '去皮'),
+  buildItem('tdi-22', '20:00', '第四餐', '饮食', '红薯', 200, 'g', '二选一'),
+  buildItem('tdi-23', '20:00', '第四餐', '饮食', '鸡胸', 120, 'g', '二选一'),
+  buildItem('tdi-24', '22:30', '睡前', '补剂', '鱼油', 2, '粒', 'EPA 1500mg'),
+  buildItem('tdi-25', '22:30', '睡前', '补剂', '镁', 2, '粒', '随少量水')
 ]
 
 const restDayItems: DailyPlanItem[] = [
-  buildItem('rdi-1', '07:00', '全天', '全天', '动物黄油 15g', 15, 'g', '烹饪或直接食用，全天总量', { protein: 0, carbs: 0, fat: 12.3, calories: 111 }, true),
-  buildItem('rdi-2', '07:30', '早餐', '饮食', '燕麦60g + 全蛋2个', 1, '份', '生重燕麦 + 两个全蛋', { protein: 20.4, carbs: 36.4, fat: 14.2, calories: 354 }),
-  buildItem('rdi-3', '11:30', '第二餐', '饮食', '红薯250g + 生米60g + 鸡胸120g', 1, '份', '主食红薯+生米，蛋白鸡胸', { protein: 41, carbs: 91.8, fat: 2.7, calories: 535 }),
-  buildItem('rdi-4', '15:30', '练前', '饮食', '柚子200g', 200, 'g', '休息日练前水果，碳水约10g', { protein: 1, carbs: 10, fat: 0, calories: 44 }),
-  buildItem('rdi-5', '18:00', '第三餐', '饮食', '红薯250g + 生米60g + 鸡胸120g', 1, '份', '主食红薯+生米，蛋白鸡胸', { protein: 41, carbs: 91.8, fat: 2.7, calories: 535 }),
-  buildItem('rdi-6', '20:00', '第四餐', '饮食', '红薯250g + 鸡胸120g', 1, '份', '晚加餐', { protein: 33, carbs: 81, fat: 1.5, calories: 474 })
+  buildItem('rdi-1', '07:00', '全天', '全天', '动物黄油', 15, 'g', '烹饪或直接食用，全天总量', true),
+  buildItem('rdi-2', '07:30', '醒后', '饮食', '发酵茶', 300, 'ml', '黑茶 / 红茶 / 乌龙茶三选一'),
+  buildItem('rdi-3', '07:30', '醒后', '补剂', '维生素C', 1, 'g', '随茶冲服'),
+  buildItem('rdi-4', '08:00', '早餐', '饮食', '燕麦', 60, 'g', '生重'),
+  buildItem('rdi-5', '08:00', '早餐', '饮食', '全蛋', 2, '个', '约 100g'),
+  buildItem('rdi-6', '08:00', '早餐', '补剂', '复合维生素B', 2, '片', '随餐'),
+  buildItem('rdi-7', '08:00', '早餐', '补剂', '维生素D', 2, '片', '随餐'),
+  buildItem('rdi-8', '11:30', '第二餐', '饮食', '红薯', 250, 'g', '二选一'),
+  buildItem('rdi-9', '11:30', '第二餐', '饮食', '生米', 60, 'g', '生重'),
+  buildItem('rdi-10', '11:30', '第二餐', '饮食', '鸡胸', 120, 'g', '二选一'),
+  buildItem('rdi-11', '11:30', '第二餐', '补剂', '铬片', 1, '片', '随餐'),
+  buildItem('rdi-12', '15:30', '练前', '饮食', '柚子', 200, 'g', '训练前 20 分钟'),
+  buildItem('rdi-13', '16:00', '有氧', '训练', '单车或低强度有氧', 40, 'min', '心率不超过最大心率 70%'),
+  buildItem('rdi-14', '18:00', '第三餐', '饮食', '红薯', 250, 'g', '二选一'),
+  buildItem('rdi-15', '18:00', '第三餐', '饮食', '生米', 60, 'g', '生重'),
+  buildItem('rdi-16', '18:00', '第三餐', '饮食', '鸡胸', 120, 'g', '二选一'),
+  buildItem('rdi-17', '18:00', '第三餐', '补剂', '铬片', 1, '片', '随餐'),
+  buildItem('rdi-18', '19:00', '第四餐', '饮食', '红薯', 250, 'g', '二选一'),
+  buildItem('rdi-19', '19:00', '第四餐', '饮食', '鸡胸', 120, 'g', '二选一'),
+  buildItem('rdi-20', '22:30', '睡前', '补剂', '鱼油', 2, '粒', 'EPA 1500mg'),
+  buildItem('rdi-21', '22:30', '睡前', '补剂', '镁', 2, '粒', '随少量水')
 ]
 
 export const defaultDailyPlans: DailyPlanTemplate[] = [

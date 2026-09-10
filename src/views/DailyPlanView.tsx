@@ -6,7 +6,7 @@ import { createId } from '../lib/ids'
 import { dailyPlanCategoryClass, getActivePlan, materializeItems } from '../lib/dailyPlan'
 import { analyzePlanNutrition, compareMacro } from '../lib/planNutrition'
 import { diffPlans } from '../lib/planDiff'
-import { calculateEngine } from '../lib/engine'
+import { calculateEngine, getEffectiveLibrariesForState } from '../lib/engine'
 import type { DailyPlanDayType, DailyPlanItem, DailyPlanItemKind, DailyPlanTemplate, MacroTotals } from '../types'
 
 const KIND_OPTIONS: DailyPlanItemKind[] = ['饮食', '补剂', '训练', '全天']
@@ -57,14 +57,15 @@ export function DailyPlanView() {
   const [diffPlanId, setDiffPlanId] = useState<string | null>(null)
 
   const result = useMemo(() => calculateEngine(nutritionState), [nutritionState])
+  const libraries = useMemo(() => getEffectiveLibrariesForState(nutritionState), [nutritionState])
   const target = result.macro
 
   const trainingPlan = useMemo(() => getActivePlan(state, 'training'), [state])
   const restPlan = useMemo(() => getActivePlan(state, 'rest'), [state])
   const allPlans = state.dailyPlans ?? []
 
-  const trainingNutrition = useMemo(() => trainingPlan ? analyzePlanNutrition(trainingPlan) : null, [trainingPlan])
-  const restNutrition = useMemo(() => restPlan ? analyzePlanNutrition(restPlan) : null, [restPlan])
+  const trainingNutrition = useMemo(() => trainingPlan ? analyzePlanNutrition(trainingPlan, libraries.foods, libraries.supplements) : null, [trainingPlan, libraries.foods, libraries.supplements])
+  const restNutrition = useMemo(() => restPlan ? analyzePlanNutrition(restPlan, libraries.foods, libraries.supplements) : null, [restPlan, libraries.foods, libraries.supplements])
 
   const bodyTrend = useMemo(() => {
     const logs = [...state.bodyLogs].filter((log) => log.weightKg > 0).sort((a, b) => a.date.localeCompare(b.date))
@@ -207,7 +208,7 @@ export function DailyPlanView() {
   }
 
   const renderNutrition = (plan: DailyPlanTemplate) => {
-    const nutrition = analyzePlanNutrition(plan)
+    const nutrition = analyzePlanNutrition(plan, libraries.foods, libraries.supplements)
     const delta = compareMacro(nutrition.totals, targetAsMacro(target))
     return (
       <details className="daily-plan-preview">

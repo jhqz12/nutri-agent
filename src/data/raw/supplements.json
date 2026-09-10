@@ -1,20 +1,334 @@
 [
-  {"id":"S01","name":"葫芦巴","servingAmount":1,"servingUnit":"粒","nutrients":{"zinc":20},"calories":0,"containsOil":false,"compound":true,"timing":"空腹早餐前","conflicts":["S16"],"dataGaps":[]},
-  {"id":"S02","name":"B族复合","servingAmount":1,"servingUnit":"片","nutrients":{"vitaminB1":null,"vitaminB2":null,"vitaminB6":null,"vitaminB12":null,"folate":null},"calories":0,"containsOil":false,"compound":true,"timing":"早餐后","conflicts":[],"dataGaps":["全部成分数值"]},
-  {"id":"S03","name":"D3+K2","servingAmount":1,"servingUnit":"粒","nutrients":{"vitaminD":null,"vitaminK":null},"calories":0,"containsOil":false,"compound":true,"timing":"早餐后（配油脂）","conflicts":[],"dataGaps":["D3 IU","K2 μg"]},
-  {"id":"S04","name":"辅酶Q10","servingAmount":1,"servingUnit":"粒","nutrients":{"coq10":null},"calories":0,"containsOil":false,"compound":false,"timing":"早餐后（配油脂）","conflicts":[],"dataGaps":["Q10 mg"]},
-  {"id":"S05","name":"吡啶甲酸铬","servingAmount":1,"servingUnit":"片","nutrients":{"chromium":null},"calories":0,"containsOil":false,"compound":false,"timing":"午餐前","conflicts":[],"dataGaps":["铬 μg"]},
-  {"id":"S06","name":"鱼油","servingAmount":1,"servingUnit":"粒","nutrients":{"epaDha":null,"fat":null},"calories":null,"containsOil":true,"compound":false,"timing":"午餐后（配正餐）","conflicts":[],"dataGaps":["EPA+DHA mg","油脂克数","热量"]},
-  {"id":"S07","name":"益生菌","servingAmount":1,"servingUnit":"袋","nutrients":{"cfu":null},"calories":0,"containsOil":false,"compound":false,"timing":"午餐后","conflicts":[],"dataGaps":["菌株数"]},
-  {"id":"S08","name":"肌酸","servingAmount":1,"servingUnit":"份","nutrients":{"creatine":null},"calories":0,"containsOil":false,"compound":false,"timing":"午餐后","conflicts":[],"dataGaps":["一水肌酸 g"]},
-  {"id":"S09","name":"电解质","servingAmount":1,"servingUnit":"份","nutrients":{"sodium":null,"potassium":null,"magnesium":null},"calories":null,"containsOil":false,"compound":true,"timing":"训练前","conflicts":[],"dataGaps":["钠","钾","镁","热量"]},
-  {"id":"S10","name":"呋喃硫胺","servingAmount":1,"servingUnit":"片","nutrients":{"vitaminB1":null},"calories":0,"containsOil":false,"compound":false,"timing":"训练前","conflicts":[],"dataGaps":["B1衍生物数值"]},
-  {"id":"S11","name":"苏糖酸镁","servingAmount":1,"servingUnit":"粒","nutrients":{"magnesium":null},"calories":0,"containsOil":false,"compound":false,"timing":"训练前","conflicts":[],"dataGaps":["镁 mg"]},
-  {"id":"S12","name":"α-GPC","servingAmount":1,"servingUnit":"粒","nutrients":{"choline":null},"calories":0,"containsOil":false,"compound":false,"timing":"训练前","conflicts":[],"dataGaps":["胆碱折算值"]},
-  {"id":"S13","name":"白砂糖糖水","servingAmount":1,"servingUnit":"份","nutrients":{"carbs":null},"calories":null,"containsOil":false,"compound":false,"timing":"训练中唯一补糖","conflicts":[],"dataGaps":["碳水克数","热量"]},
-  {"id":"S14","name":"虾青素","servingAmount":1,"servingUnit":"粒","nutrients":{"astaxanthin":null},"calories":0,"containsOil":false,"compound":false,"timing":"睡前","conflicts":[],"dataGaps":["虾青素 mg"]},
-  {"id":"S15","name":"维生素C","servingAmount":1,"servingUnit":"片","nutrients":{"vitaminC":null},"calories":0,"containsOil":false,"compound":false,"timing":"睡前","conflicts":[],"dataGaps":["维生素C mg"]},
-  {"id":"S16","name":"锌镁硼硒片","servingAmount":1,"servingUnit":"片","nutrients":{"zinc":null,"magnesium":null,"boron":null,"selenium":null},"calories":0,"containsOil":false,"compound":true,"timing":"待排期","conflicts":["S01"],"dataGaps":["锌","镁","硼","硒"]},
-  {"id":"S17","name":"蛋白粉","servingAmount":1,"servingUnit":"份","nutrients":{"protein":null},"calories":null,"containsOil":false,"compound":false,"timing":"倾向早晨","conflicts":[],"dataGaps":["蛋白质 g","热量"]},
-  {"id":"S18","name":"金枪鱼拌饭（预制餐）","servingAmount":1,"servingUnit":"份","nutrients":{},"calories":null,"containsOil":false,"compound":true,"timing":"倾向晚餐","conflicts":[],"dataGaps":["需按食材还原全部营养"]}
+ {
+  "id": "S01",
+  "name": "葫芦巴",
+  "servingAmount": 1,
+  "servingUnit": "粒",
+  "nutrients": {
+   "zinc": 20
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": true,
+  "timing": "空腹早餐前",
+  "conflicts": [
+   "S16"
+  ],
+  "dataGaps": []
+ },
+ {
+  "id": "S02",
+  "name": "B族复合",
+  "servingAmount": 1,
+  "servingUnit": "片",
+  "nutrients": {
+   "vitaminB1": 1.2,
+   "vitaminB2": 1.3,
+   "vitaminB6": 1.7,
+   "vitaminB12": 2.4,
+   "folate": 400
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": true,
+  "timing": "早餐后",
+  "conflicts": [],
+  "dataGaps": [],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "S03",
+  "name": "D3+K2",
+  "servingAmount": 1,
+  "servingUnit": "粒",
+  "nutrients": {
+   "vitaminD": 50,
+   "vitaminK": 100
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": true,
+  "timing": "早餐后（配油脂）",
+  "conflicts": [],
+  "dataGaps": [],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "S04",
+  "name": "辅酶Q10",
+  "servingAmount": 1,
+  "servingUnit": "粒",
+  "nutrients": {
+   "coq10": null
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "早餐后（配油脂）",
+  "conflicts": [],
+  "dataGaps": [
+   "Q10 mg"
+  ]
+ },
+ {
+  "id": "S05",
+  "name": "吡啶甲酸铬",
+  "servingAmount": 1,
+  "servingUnit": "片",
+  "nutrients": {
+   "chromium": 200
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "午餐前",
+  "conflicts": [],
+  "dataGaps": [],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "S06",
+  "name": "鱼油",
+  "servingAmount": 1,
+  "servingUnit": "粒",
+  "nutrients": {
+   "epaDha": 1500,
+   "fat": 1.0
+  },
+  "calories": 9,
+  "containsOil": true,
+  "compound": false,
+  "timing": "午餐后（配正餐）",
+  "conflicts": [],
+  "dataGaps": [],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "S07",
+  "name": "益生菌",
+  "servingAmount": 1,
+  "servingUnit": "袋",
+  "nutrients": {
+   "cfu": null
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "午餐后",
+  "conflicts": [],
+  "dataGaps": [
+   "菌株数"
+  ]
+ },
+ {
+  "id": "S08",
+  "name": "肌酸",
+  "servingAmount": 1,
+  "servingUnit": "份",
+  "nutrients": {
+   "creatine": 5.0
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "午餐后",
+  "conflicts": [],
+  "dataGaps": [],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "S09",
+  "name": "电解质",
+  "servingAmount": 1,
+  "servingUnit": "份",
+  "nutrients": {
+   "sodium": null,
+   "potassium": null,
+   "magnesium": null
+  },
+  "calories": null,
+  "containsOil": false,
+  "compound": true,
+  "timing": "训练前",
+  "conflicts": [],
+  "dataGaps": [
+   "钠",
+   "钾",
+   "镁",
+   "热量"
+  ]
+ },
+ {
+  "id": "S10",
+  "name": "呋喃硫胺",
+  "servingAmount": 1,
+  "servingUnit": "片",
+  "nutrients": {
+   "vitaminB1": null
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "训练前",
+  "conflicts": [],
+  "dataGaps": [
+   "B1衍生物数值"
+  ]
+ },
+ {
+  "id": "S11",
+  "name": "苏糖酸镁",
+  "servingAmount": 1,
+  "servingUnit": "粒",
+  "nutrients": {
+   "magnesium": 200
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "训练前",
+  "conflicts": [],
+  "dataGaps": [],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "S12",
+  "name": "α-GPC",
+  "servingAmount": 1,
+  "servingUnit": "粒",
+  "nutrients": {
+   "choline": null
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "训练前",
+  "conflicts": [],
+  "dataGaps": [
+   "胆碱折算值"
+  ]
+ },
+ {
+  "id": "S13",
+  "name": "白砂糖糖水",
+  "servingAmount": 1,
+  "servingUnit": "份",
+  "nutrients": {
+   "carbs": null
+  },
+  "calories": null,
+  "containsOil": false,
+  "compound": false,
+  "timing": "训练中唯一补糖",
+  "conflicts": [],
+  "dataGaps": [
+   "碳水克数",
+   "热量"
+  ]
+ },
+ {
+  "id": "S14",
+  "name": "虾青素",
+  "servingAmount": 1,
+  "servingUnit": "粒",
+  "nutrients": {
+   "astaxanthin": null
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "睡前",
+  "conflicts": [],
+  "dataGaps": [
+   "虾青素 mg"
+  ]
+ },
+ {
+  "id": "S15",
+  "name": "维生素C",
+  "servingAmount": 1,
+  "servingUnit": "片",
+  "nutrients": {
+   "vitaminC": 1000
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": false,
+  "timing": "睡前",
+  "conflicts": [],
+  "dataGaps": [],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "S16",
+  "name": "锌镁硼硒片",
+  "servingAmount": 1,
+  "servingUnit": "片",
+  "nutrients": {
+   "zinc": null,
+   "magnesium": null,
+   "boron": null,
+   "selenium": null
+  },
+  "calories": 0,
+  "containsOil": false,
+  "compound": true,
+  "timing": "待排期",
+  "conflicts": [
+   "S01"
+  ],
+  "dataGaps": [
+   "锌",
+   "镁",
+   "硼",
+   "硒"
+  ]
+ },
+ {
+  "id": "S17",
+  "name": "蛋白粉",
+  "servingAmount": 1,
+  "servingUnit": "份",
+  "nutrients": {
+   "protein": 24.0
+  },
+  "calories": 120,
+  "containsOil": false,
+  "compound": false,
+  "timing": "倾向早晨",
+  "conflicts": [],
+  "dataGaps": [],
+  "tags": [
+   "9月"
+  ]
+ },
+ {
+  "id": "S18",
+  "name": "金枪鱼拌饭（预制餐）",
+  "servingAmount": 1,
+  "servingUnit": "份",
+  "nutrients": {},
+  "calories": null,
+  "containsOil": false,
+  "compound": true,
+  "timing": "倾向晚餐",
+  "conflicts": [],
+  "dataGaps": [
+   "需按食材还原全部营养"
+  ]
+ }
 ]
