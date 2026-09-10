@@ -17,7 +17,8 @@ const DAYTYPE_OPTIONS: Array<{ value: DailyPlanDayType; label: string }> = [
 const emptyDraft: Omit<DailyPlanItem, 'id'> = {
   time: '08:00', label: '早餐', kind: '饮食',
   foodName: '', amount: 0, unit: 'g', note: '', locked: false,
-  foodId: null, supplementId: null
+  foodId: null, supplementId: null,
+  protein: null, carbs: null, fat: null, calories: null
 }
 
 function buildTemplateFromItems(name: string, dayType: DailyPlanDayType, items: DailyPlanItem[], source: string, userImported: boolean): DailyPlanTemplate {
@@ -319,6 +320,10 @@ export function DailyPlanView() {
                     <label>类型<select value={draft.kind} onChange={(e) => setDraft({ ...draft, kind: e.target.value as DailyPlanItemKind })}>{KIND_OPTIONS.map((kind) => <option key={kind}>{kind}</option>)}</select></label>
                     <label>份量<input type="number" min="0" value={draft.amount} onChange={(e) => setDraft({ ...draft, amount: Number(e.target.value) })} /></label>
                     <label>单位<input value={draft.unit} onChange={(e) => setDraft({ ...draft, unit: e.target.value })} placeholder="g / ml / 片 / 颗" /></label>
+                    <label>蛋白质(g)<input type="number" min="0" step="0.1" value={draft.protein ?? ''} onChange={(e) => setDraft({ ...draft, protein: e.target.value === '' ? null : Number(e.target.value) })} placeholder="精确值，留空则按食物名估算" /></label>
+                    <label>碳水(g)<input type="number" min="0" step="0.1" value={draft.carbs ?? ''} onChange={(e) => setDraft({ ...draft, carbs: e.target.value === '' ? null : Number(e.target.value) })} /></label>
+                    <label>脂肪(g)<input type="number" min="0" step="0.1" value={draft.fat ?? ''} onChange={(e) => setDraft({ ...draft, fat: e.target.value === '' ? null : Number(e.target.value) })} /></label>
+                    <label>热量(kcal)<input type="number" min="0" value={draft.calories ?? ''} onChange={(e) => setDraft({ ...draft, calories: e.target.value === '' ? null : Number(e.target.value) })} placeholder="填了热量即按精确值计入合计" /></label>
                     <label className="full-field">备注<textarea value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} /></label>
                     <label className="full-field"><input type="checkbox" checked={draft.locked} onChange={(e) => setDraft({ ...draft, locked: e.target.checked })} />锁定此项，不参与随机替换</label>
                     <div className="dialog-actions">
@@ -344,6 +349,10 @@ export function DailyPlanView() {
               <label>类型<select value={draft.kind} onChange={(e) => setDraft({ ...draft, kind: e.target.value as DailyPlanItemKind })}>{KIND_OPTIONS.map((kind) => <option key={kind}>{kind}</option>)}</select></label>
               <label>份量<input type="number" min="0" value={draft.amount} onChange={(e) => setDraft({ ...draft, amount: Number(e.target.value) })} /></label>
               <label>单位<input value={draft.unit} onChange={(e) => setDraft({ ...draft, unit: e.target.value })} /></label>
+              <label>蛋白质(g)<input type="number" min="0" step="0.1" value={draft.protein ?? ''} onChange={(e) => setDraft({ ...draft, protein: e.target.value === '' ? null : Number(e.target.value) })} placeholder="精确值，留空则按食物名估算" /></label>
+              <label>碳水(g)<input type="number" min="0" step="0.1" value={draft.carbs ?? ''} onChange={(e) => setDraft({ ...draft, carbs: e.target.value === '' ? null : Number(e.target.value) })} /></label>
+              <label>脂肪(g)<input type="number" min="0" step="0.1" value={draft.fat ?? ''} onChange={(e) => setDraft({ ...draft, fat: e.target.value === '' ? null : Number(e.target.value) })} /></label>
+              <label>热量(kcal)<input type="number" min="0" value={draft.calories ?? ''} onChange={(e) => setDraft({ ...draft, calories: e.target.value === '' ? null : Number(e.target.value) })} placeholder="填了热量即按精确值计入合计" /></label>
               <label className="full-field">备注<textarea value={draft.note} onChange={(e) => setDraft({ ...draft, note: e.target.value })} /></label>
               <label className="full-field"><input type="checkbox" checked={draft.locked} onChange={(e) => setDraft({ ...draft, locked: e.target.checked })} />锁定此项，不参与随机替换</label>
               <div className="dialog-actions">

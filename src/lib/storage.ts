@@ -2,7 +2,7 @@ import type { AppState } from '../types'
 import { defaultDailyPlans, defaultLegExercises, defaultPullExercises, defaultPushExercises, defaultState } from '../data/defaults'
 
 const STORAGE_KEY = 'personal-fitness-dashboard-v1'
-const CURRENT_DATA_VERSION = 9
+const CURRENT_DATA_VERSION = 10
 
 function appendMissingExercises(
   planDays: AppState['planDays'],
@@ -83,6 +83,20 @@ export function migrateState(savedState: Partial<AppState>): AppState {
       ...log,
       morningState: typeof log.morningState === 'number' ? log.morningState : undefined,
       sleepQuality: typeof log.sleepQuality === 'number' ? log.sleepQuality : undefined
+    }))
+  }
+  if (savedVersion < 10) {
+    // 精确营养值字段默认补 null；参考公式默认未选择
+    mergedState.referenceFormulaId = typeof mergedState.referenceFormulaId === 'string' ? mergedState.referenceFormulaId : null
+    mergedState.dailyPlans = (mergedState.dailyPlans ?? []).map((plan) => ({
+      ...plan,
+      items: (plan.items ?? []).map((item) => ({
+        ...item,
+        protein: typeof item.protein === 'number' ? item.protein : null,
+        carbs: typeof item.carbs === 'number' ? item.carbs : null,
+        fat: typeof item.fat === 'number' ? item.fat : null,
+        calories: typeof item.calories === 'number' ? item.calories : null
+      }))
     }))
   }
 

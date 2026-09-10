@@ -134,6 +134,11 @@ export interface DailyPlanItem {
   unit: string
   note: string
   locked: boolean
+  // 精确营养值（这一项/这一餐的总量，单位 g / kcal）。有值时营养分析直接采用，不再按食物名反推。
+  protein?: number | null
+  carbs?: number | null
+  fat?: number | null
+  calories?: number | null
 }
 
 export interface DailyPlanHistoryEntry {
@@ -239,6 +244,7 @@ export interface AppState {
   dailyPlans: DailyPlanTemplate[]
   dailyPlanMode: DailyPlanMode
   mealSource: MealSource
+  referenceFormulaId: string | null
   lastUpdatedAt: string
 }
 

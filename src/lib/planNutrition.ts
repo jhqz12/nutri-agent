@@ -129,6 +129,28 @@ export function analyzeItems(items: DailyPlanItem[]): PlanNutrition {
   for (const item of items) {
     if (item.kind !== '饮食' && item.kind !== '全天') continue
     totalCount += 1
+    const slot = item.label || '其他'
+    // 精确营养值优先：用户手算的餐直接采用，分毫不差
+    if (Number.isFinite(item.calories)) {
+      matchedCount += 1
+      const entry: PlanItemNutrition = {
+        item,
+        foodKey: '精确',
+        grams: 0,
+        calories: Math.round(item.calories ?? 0),
+        protein: round1(item.protein ?? 0),
+        fat: round1(item.fat ?? 0),
+        carbs: round1(item.carbs ?? 0)
+      }
+      result.push(entry)
+      const slotTotal = bySlot[slot] ?? emptyMacro()
+      slotTotal.calories += entry.calories
+      slotTotal.protein += entry.protein
+      slotTotal.fat += entry.fat
+      slotTotal.carbs += entry.carbs
+      bySlot[slot] = slotTotal
+      continue
+    }
     const foodKey = resolveFoodKeyFromName(item.foodName)
     const per100 = foodKey ? PER_100G[foodKey] : null
     if (!foodKey || !per100) {
@@ -148,7 +170,6 @@ export function analyzeItems(items: DailyPlanItem[]): PlanNutrition {
       carbs: round1(per100.carbs * scale)
     }
     result.push(entry)
-    const slot = item.label || '其他'
     const slotTotal = bySlot[slot] ?? emptyMacro()
     slotTotal.calories += entry.calories
     slotTotal.protein += entry.protein
@@ -159,9 +180,9 @@ export function analyzeItems(items: DailyPlanItem[]): PlanNutrition {
 
   const totals = result.reduce<MacroTotals>((sum, entry) => ({
     calories: sum.calories + entry.calories,
-    protein: round1(sum.protein + entry.protein),
+    protein: round0(sum.protein + entry.protein),
     fat: round1(sum.fat + entry.fat),
-    carbs: round1(sum.carbs + entry.carbs)
+    carbs: round0(sum.carbs + entry.carbs)
   }), emptyMacro())
 
   return { items: result, matchedCount, totalCount, totals, bySlot, unknownFoods }

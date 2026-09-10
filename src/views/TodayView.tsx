@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, AlertTriangle, Beef, CalendarSync, Check, Flame, ShieldCheck } from 'lucide-react'
+import { Activity, Beef, CalendarSync, Check, Flame, History, ShieldCheck } from 'lucide-react'
 import { calculateEngine } from '../lib/engine'
 import { useNutritionState } from '../state/NutritionContext'
 import { useAppState } from '../state/AppContext'
 import { formatLocalDate, getPlanForDate } from '../lib/trainingPlans'
+import { buildScheduleRow, getActivePlan, materializeItems, readCheckedRows } from '../lib/dailyPlan'
 import { TimelineView } from './TimelineView'
 import { TodayView as NutritionTodayView } from './nutrition/TodayView'
 
@@ -22,7 +23,28 @@ export function TodayView() {
   const [anchorNotice, setAnchorNotice] = useState('')
   const result = useMemo(() => calculateEngine(nutritionState), [nutritionState])
   const lockedCount = Object.keys(result.supplementLocks).length
-  const priorityIssues = result.ledger.filter((row) => row.status === '超量' || row.status === '不足').slice(0, 3)
+
+  // 昨天缺失：昨天计划里没打卡完成的事项，今天反映出来提醒补做
+  const yesterdayMissing = useMemo(() => {
+    const yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    const yesterdayDate = formatLocalDate(yesterday)
+    const plan = getPlanForDate(
+      dashboardState.planDays,
+      dashboardState.trainingFrequency,
+      dashboardState.trainingCycleStartedAt,
+      yesterday,
+      dashboardState.trainingCycleAnchor
+    )
+    const dayType: 'training' | 'rest' = plan.isRestDay ? 'rest' : 'training'
+    const active = getActivePlan(dashboardState, dayType)
+    if (!active) return []
+    const checked = readCheckedRows(yesterdayDate)
+    return materializeItems(active, 'fixed', 0)
+      .map((entry) => ({ entry, row: buildScheduleRow(entry, dayType) }))
+      .filter(({ row }) => !checked.has(row.id))
+      .map(({ entry, row }) => ({ id: row.id, title: `${entry.item.label}·${entry.displayName} ${entry.item.amount}${entry.item.unit}` }))
+  }, [dashboardState])
 
   useEffect(() => setDayChoice(currentChoice), [currentChoice])
 
@@ -76,10 +98,9 @@ export function TodayView() {
       <p className={anchorNotice ? 'day-anchor-feedback is-visible' : 'day-anchor-feedback'} aria-live="polite">{anchorNotice || `当前为${currentLabel}。只有点击确认，后续循环才会改变。`}</p>
     </section>
     <section className="today-risk-brief today-panel">
-      <div className="section-heading"><div><h2>今天先处理</h2><p>只列出会影响执行的事项。</p></div><AlertTriangle size={18} /></div>
-      {Object.entries(result.supplementLocks).map(([id, reason]) => <div className="priority-row danger" key={id}><strong>{id} 已锁定</strong><span>{reason}</span></div>)}
-      {priorityIssues.map((issue) => <div className="priority-row" key={issue.id}><strong>{issue.name} · {issue.status}</strong><span>{issue.advice}</span></div>)}
-      {!lockedCount && !priorityIssues.length && <div className="priority-row ok"><strong>当前无硬性冲突</strong><span>继续按今日餐单和补剂时序执行。</span></div>}
+      <div className="section-heading"><div><h2>昨天缺失</h2><p>昨天没打卡完成的事项，今天提醒你补上。</p></div><History size={18} /></div>
+      {yesterdayMissing.map((item) => <div className="priority-row" key={item.id}><strong>昨天没做</strong><span>{item.title}</span></div>)}
+      {!yesterdayMissing.length && <div className="priority-row ok"><strong>昨天全部完成</strong><span>没有遗漏的事项，继续保持。</span></div>}
     </section>
     <TimelineView />
     <details className="advanced-panel today-nutrition-details">

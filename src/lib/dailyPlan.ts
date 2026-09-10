@@ -120,4 +120,33 @@ export function groupItemsBySlot(items: MaterializedItem[]): Array<{ slot: strin
 }
 
 export const dailyPlanCategoryClass: Record<DailyPlanItemKind, string> = CATEGORY_CLASS
+
+// ---- 打卡状态（按日期存储，支持「今天打卡」与「昨天缺失」追溯） ----
+
+function checkKeyForDate(date: string, rowId: string): string {
+  return `dailyplan-check-${date}-${rowId}`
+}
+
+export function readCheckedRows(date: string): Set<string> {
+  const checked = new Set<string>()
+  if (typeof window === 'undefined') return checked
+  const prefix = `dailyplan-check-${date}-`
+  for (let i = 0; i < window.localStorage.length; i += 1) {
+    const key = window.localStorage.key(i)
+    if (key && key.startsWith(prefix) && window.localStorage.getItem(key) === '1') {
+      checked.add(key.slice(prefix.length))
+    }
+  }
+  return checked
+}
+
+export function toggleCheckedRow(date: string, rowId: string): boolean {
+  if (typeof window === 'undefined') return false
+  const key = checkKeyForDate(date, rowId)
+  const next = window.localStorage.getItem(key) === '1' ? null : '1'
+  if (next) window.localStorage.setItem(key, '1')
+  else window.localStorage.removeItem(key)
+  return next === '1'
+}
+
 export { createId }
