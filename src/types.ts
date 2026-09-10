@@ -245,6 +245,7 @@ export interface AppState {
   dailyPlanMode: DailyPlanMode
   mealSource: MealSource
   referenceFormulaId: string | null
+  targetSource: 'plan' | 'formula'
   lastUpdatedAt: string
 }
 

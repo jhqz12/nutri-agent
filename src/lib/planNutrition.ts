@@ -197,9 +197,7 @@ export function analyzeItems(
         : findSupplementInLibrary(item.foodName, supplements)
       if (supplement) {
         matchedCount += 1
-        const servingCount = toGrams(item) === 0 ? item.amount : 1
-        const amount = item.unit === 'g' || item.unit === 'ml' ? item.amount : item.amount
-        // 补剂按「份」计：amount 即份数
+        // 补剂按「份」计：amount 即份数（g/ml 按每份克数折算）
         const portions = item.unit === 'g' || item.unit === 'ml' ? item.amount / Math.max(1, supplement.servingAmount) : item.amount
         const scale = portions
         const protein = supplement.nutrients.protein ?? 0
@@ -215,7 +213,26 @@ export function analyzeItems(
           carbs: round1(carbs * scale)
         })
       } else {
-        unknownFoods.push(item.foodName)
+        // 补剂库匹配不到时，回退到食材库（葡萄糖粉、蛋白粉等既是食物又常被归为补剂）
+        const food = item.foodId
+          ? foods.find((food) => food.id === item.foodId)
+          : findFoodInLibrary(item.foodName, foods)
+        if (food) {
+          matchedCount += 1
+          const grams = toGrams(item)
+          const scale = grams / 100
+          addEntry(slot, {
+            item,
+            foodKey: food.name,
+            grams,
+            calories: round0(food.calories * scale),
+            protein: round1((food.protein ?? 0) * scale),
+            fat: round1((food.fat ?? 0) * scale),
+            carbs: round1((food.carbs ?? 0) * scale)
+          })
+        } else {
+          unknownFoods.push(item.foodName)
+        }
       }
       continue
     }

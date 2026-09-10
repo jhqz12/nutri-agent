@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Activity, Beef, CalendarSync, Check, Flame, History, ShieldCheck } from 'lucide-react'
-import { calculateEngine } from '../lib/engine'
+import { calculateEngine, getEffectiveLibrariesForState } from '../lib/engine'
 import { useNutritionState } from '../state/NutritionContext'
 import { useAppState } from '../state/AppContext'
 import { formatLocalDate, getPlanForDate } from '../lib/trainingPlans'
 import { buildScheduleRow, getActivePlan, materializeItems, readCheckedRows } from '../lib/dailyPlan'
+import { analyzePlanNutrition } from '../lib/planNutrition'
 import { TimelineView } from './TimelineView'
 import { TodayView as NutritionTodayView } from './nutrition/TodayView'
 
@@ -23,7 +24,19 @@ export function TodayView() {
   const [anchorNotice, setAnchorNotice] = useState('')
   const [showAllMissing, setShowAllMissing] = useState(false)
   const result = useMemo(() => calculateEngine(nutritionState), [nutritionState])
+  const libraries = useMemo(() => getEffectiveLibrariesForState(nutritionState), [nutritionState])
   const lockedCount = Object.keys(result.supplementLocks).length
+  const targetSource = dashboardState.targetSource ?? 'plan'
+
+  // 目标热量：plan 模式 = 我的计划自身营养合计；formula 模式 = 公式算出的目标
+  const dayType: 'training' | 'rest' = todayPlan.isRestDay ? 'rest' : 'training'
+  const activePlan = useMemo(() => getActivePlan(dashboardState, dayType), [dashboardState, dayType])
+  const planNutrition = useMemo(() => activePlan ? analyzePlanNutrition(activePlan, libraries.foods, libraries.supplements) : null, [activePlan, libraries.foods, libraries.supplements])
+  const targetCalories = targetSource === 'formula'
+    ? result.macro.targetCalories
+    : (planNutrition?.totals.calories ?? result.macro.targetCalories)
+  const targetProtein = targetSource === 'formula' ? result.macro.protein : (planNutrition?.totals.protein ?? result.macro.protein)
+  const targetLabel = targetSource === 'formula' ? result.macro.formulaName : (activePlan?.name ?? '我的计划')
 
   // 昨天缺失：昨天计划里没打卡完成的事项，今天反映出来提醒补做
   const yesterdayMissing = useMemo(() => {
@@ -80,8 +93,8 @@ export function TodayView() {
   return <div className="view-stack today-workbench">
     <section className="today-dashboard" aria-label="今日身体与营养摘要">
       <div className="today-overview">
-        <div><Flame size={18} /><span>目标热量</span><strong>{result.macro.targetCalories}<small> kcal</small></strong><em>今日执行基准</em></div>
-        <div><Beef size={18} /><span>蛋白质</span><strong>{result.macro.protein}<small> g</small></strong><em>保留肌肉</em></div>
+        <div><Flame size={18} /><span>目标热量</span><strong>{targetCalories}<small> kcal</small></strong><em>{targetLabel}</em></div>
+        <div><Beef size={18} /><span>蛋白质</span><strong>{targetProtein}<small> g</small></strong><em>{targetSource === 'formula' ? '公式目标' : '计划目标'}</em></div>
         <div><Activity size={18} /><span>今日属性</span><strong>{currentLabel}</strong><em>{dashboardState.trainingCycleAnchor.date === formatLocalDate() ? '已按实际情况调整' : '按训练循环判定'}</em></div>
         <div><ShieldCheck size={18} /><span>补剂锁定</span><strong>{lockedCount}<small> 项</small></strong><em>{lockedCount ? '存在冲突' : '无硬冲突'}</em></div>
       </div>
@@ -109,7 +122,7 @@ export function TodayView() {
     <TimelineView />
     <details className="advanced-panel today-nutrition-details">
       <summary>展开今日精准配餐与补剂明细</summary>
-      <NutritionTodayView state={nutritionState} result={result} />
+      <NutritionTodayView state={nutritionState} result={result} target={targetSource === 'formula' ? null : { calories: targetCalories, protein: targetProtein, fat: planNutrition?.totals.fat ?? result.macro.fat, carbs: planNutrition?.totals.carbs ?? result.macro.carbs, label: activePlan?.name ?? '我的计划' }} />
     </details>
   </div>
 }

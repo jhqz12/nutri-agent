@@ -2,7 +2,7 @@ import type { AppState } from '../types'
 import { defaultDailyPlans, defaultLegExercises, defaultPullExercises, defaultPushExercises, defaultState } from '../data/defaults'
 
 const STORAGE_KEY = 'personal-fitness-dashboard-v1'
-const CURRENT_DATA_VERSION = 10
+const CURRENT_DATA_VERSION = 11
 
 function appendMissingExercises(
   planDays: AppState['planDays'],
@@ -98,6 +98,21 @@ export function migrateState(savedState: Partial<AppState>): AppState {
         calories: typeof item.calories === 'number' ? item.calories : null
       }))
     }))
+  }
+  if (savedVersion < 11) {
+    // 目标热量来源默认「我的计划」；旧数据里名为「谭成义」的模板替换为「9月」精确名默认计划，
+    // 消除谭成义减脂表对自编 9月计划的干扰（谭成义只作为参考公式存在）。
+    mergedState.targetSource = mergedState.targetSource === 'formula' ? 'formula' : 'plan'
+    const legacyTan = (mergedState.dailyPlans ?? []).some((plan) => /谭成义|谭师/.test(plan.name))
+    if (legacyTan) {
+      const kept = (mergedState.dailyPlans ?? []).filter((plan) => !/谭成义|谭师/.test(plan.name))
+      const defaults = structuredClone(defaultDailyPlans)
+      // 保留用户自己命名的其他模板，但训练日/休息日的「谭成义」位替换为 9月默认
+      const hasTraining = kept.some((plan) => plan.dayType === 'training')
+      const hasRest = kept.some((plan) => plan.dayType === 'rest')
+      const replacements = defaults.filter((plan) => (plan.dayType === 'training' && !hasTraining) || (plan.dayType === 'rest' && !hasRest))
+      mergedState.dailyPlans = [...kept, ...replacements]
+    }
   }
 
   for (const plan of planDays) {

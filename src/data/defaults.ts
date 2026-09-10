@@ -545,5 +545,6 @@ export const defaultState: AppState = {
   dailyPlanMode: 'fixed',
   mealSource: 'plan',
   referenceFormulaId: null,
+  targetSource: 'plan',
   lastUpdatedAt: new Date().toISOString()
 }

@@ -56,10 +56,11 @@ export function TimelineView() {
   const result = useMemo(() => calculateEngine(nutritionState), [nutritionState])
   const libraries = useMemo(() => getEffectiveLibrariesForState(nutritionState), [nutritionState])
 
-  // 参考公式：默认用当前公式，也可手动切到任意公式看对比
+  // 目标热量来源：默认「我的计划」（用日计划的营养合计当目标），选「公式」才按公式算
+  const targetSource = state.targetSource ?? 'plan'
   const referenceFormulaId = state.referenceFormulaId ?? result.macro.formulaId
   const referenceFormula = libraries.formulas.find((formula) => formula.id === referenceFormulaId)
-  const target = referenceFormula ? calculateMacro(nutritionState, referenceFormula) : result.macro
+  const formulaTarget = referenceFormula ? calculateMacro(nutritionState, referenceFormula) : result.macro
 
   const planItems = useMemo(() => activePlan ? materializeItems(activePlan, mode, randomSeed) : [], [activePlan, mode, randomSeed])
   const planNutrition = useMemo(() => activePlan ? analyzePlanNutrition(activePlan, libraries.foods, libraries.supplements) : null, [activePlan, libraries.foods, libraries.supplements])
@@ -67,6 +68,11 @@ export function TimelineView() {
   const summary = mealSource === 'auto'
     ? { calories: Math.round(result.actual.calories), protein: result.actual.protein, fat: result.actual.fat, carbs: result.actual.carbs }
     : { calories: planNutrition?.totals.calories ?? 0, protein: planNutrition?.totals.protein ?? 0, fat: planNutrition?.totals.fat ?? 0, carbs: planNutrition?.totals.carbs ?? 0 }
+
+  // 目标值：plan 模式 = 我的计划自身营养合计（对标公式仍可查看）；formula 模式 = 公式算出的目标
+  const target = targetSource === 'formula'
+    ? { targetCalories: formulaTarget.targetCalories, protein: formulaTarget.protein, fat: formulaTarget.fat, carbs: formulaTarget.carbs, formulaName: formulaTarget.formulaName }
+    : { targetCalories: summary.calories, protein: summary.protein, fat: summary.fat, carbs: summary.carbs, formulaName: '我的计划' }
 
   const lifeItems = useMemo(() => state.schedule.filter((item) => ['生活', '工作', '睡眠'].includes(item.category)), [state.schedule])
 
@@ -176,7 +182,8 @@ export function TimelineView() {
 
   const switchMode = (next: 'fixed' | 'random') => setState((current) => ({ ...current, dailyPlanMode: next, lastUpdatedAt: new Date().toISOString() }))
   const switchMealSource = (next: 'plan' | 'auto') => setState((current) => ({ ...current, mealSource: next, lastUpdatedAt: new Date().toISOString() }))
-  const switchReference = (formulaId: string) => setState((current) => ({ ...current, referenceFormulaId: formulaId === result.macro.formulaId ? null : formulaId, lastUpdatedAt: new Date().toISOString() }))
+  const switchTargetSource = (next: 'plan' | 'formula') => setState((current) => ({ ...current, targetSource: next, lastUpdatedAt: new Date().toISOString() }))
+  const switchReference = (formulaId: string) => setState((current) => ({ ...current, referenceFormulaId: formulaId === result.macro.formulaId ? null : formulaId, targetSource: 'formula', lastUpdatedAt: new Date().toISOString() }))
   const reshuffle = () => setRandomSeed((seed) => seed + 1)
 
   const deltaOf = (key: 'calories' | 'protein' | 'fat' | 'carbs') => Math.round(summary[key] - (key === 'calories' ? target.targetCalories : target[key]))
@@ -226,14 +233,20 @@ export function TimelineView() {
             <p>按时间往下捋，完成一项就折叠，下一项自动往上。</p>
           </div>
           <div className="daily-plan-tools">
-            <label className="ref-formula">
-              <span>参考公式</span>
-              <select value={referenceFormulaId} onChange={(e) => switchReference(e.target.value)}>
-                {libraries.formulas.map((formula) => (
-                  <option key={formula.id} value={formula.id}>{formula.name}</option>
-                ))}
-              </select>
-            </label>
+            <div className="mode-switch" role="group" aria-label="目标热量来源">
+              <button className={targetSource === 'plan' ? 'mode-pill is-active' : 'mode-pill'} onClick={() => switchTargetSource('plan')} aria-pressed={targetSource === 'plan'}>目标·我的计划</button>
+              <button className={targetSource === 'formula' ? 'mode-pill is-active' : 'mode-pill'} onClick={() => switchTargetSource('formula')} aria-pressed={targetSource === 'formula'}>目标·公式</button>
+            </div>
+            {targetSource === 'formula' && (
+              <label className="ref-formula">
+                <span>公式</span>
+                <select value={referenceFormulaId} onChange={(e) => switchReference(e.target.value)}>
+                  {libraries.formulas.map((formula) => (
+                    <option key={formula.id} value={formula.id}>{formula.name}</option>
+                  ))}
+                </select>
+              </label>
+            )}
             <div className="mode-switch" role="group" aria-label="饮食来源">
               <button className={mealSource === 'plan' ? 'mode-pill is-active' : 'mode-pill'} onClick={() => switchMealSource('plan')} aria-pressed={mealSource === 'plan'}><ListChecks size={14} />我的计划</button>
               <button className={mealSource === 'auto' ? 'mode-pill is-active' : 'mode-pill'} onClick={() => switchMealSource('auto')} aria-pressed={mealSource === 'auto'}><Utensils size={14} />自动配餐</button>
@@ -254,7 +267,7 @@ export function TimelineView() {
           <div><span>脂肪</span><strong>{summary.fat}<small> / {target.fat} g</small></strong><em className={deltaOf('fat') > 0 ? 'delta-over' : 'delta-under'}>{deltaOf('fat') >= 0 ? '+' : ''}{deltaOf('fat')}</em></div>
           <div><span>碳水</span><strong>{summary.carbs}<small> / {target.carbs} g</small></strong><em className={deltaOf('carbs') > 0 ? 'delta-over' : 'delta-under'}>{deltaOf('carbs') >= 0 ? '+' : ''}{deltaOf('carbs')}</em></div>
         </div>
-        <p className="muted reference-note">对比基准：{target.formulaName}（{referenceFormula?.name ?? result.macro.formulaName}）。切换参考公式可对比不同方案的目标值。</p>
+        <p className="muted reference-note">{targetSource === 'formula' ? `对比基准：${target.formulaName}。可切换公式看不同方案目标值。` : '对比基准：我的计划自身营养合计。切「目标·公式」可对标任意公式。'}</p>
 
         {activePlan && planNutrition && planNutrition.unknownFoods.length > 0 && (
           <p className="muted">未匹配到营养值的项：{planNutrition.unknownFoods.join('、')}（不计入合计）</p>

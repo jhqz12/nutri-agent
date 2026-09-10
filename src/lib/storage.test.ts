@@ -29,7 +29,7 @@ describe('训练数据升级', () => {
     const migrated = migrateState(legacyState)
     const exercises = migrated.planDays.find((day) => day.name === '腿')!.exercises
 
-    expect(migrated.dataVersion).toBe(10)
+    expect(migrated.dataVersion).toBe(11)
     expect(migrated.trainingCycleAnchor).toEqual({
       date: migrated.trainingCycleStartedAt,
       planId: migrated.planDays[0]?.id ?? null,
@@ -70,7 +70,7 @@ describe('训练数据升级', () => {
 
     const migrated = migrateState(previousState)
 
-    expect(migrated.dataVersion).toBe(10)
+    expect(migrated.dataVersion).toBe(11)
     expect(migrated.coachMessages).toEqual([])
     expect(migrated.sessions[0]?.id).toBe('session-existing')
   })

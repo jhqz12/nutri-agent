@@ -4,20 +4,21 @@ import { calculateMealCalories } from '../../lib/mealEnergy'
 import { displayMealName } from '../../lib/foodUnits'
 import type { AppState, EngineResult, MealGroup } from '../../nutritionTypes'
 
-export function TodayView({ state, result }: { state: AppState; result: EngineResult }) {
+export function TodayView({ state, result, target }: { state: AppState; result: EngineResult; target?: { calories: number; protein: number; fat: number; carbs: number; label: string } | null }) {
   const libraries = getEffectiveLibrariesForState(state)
   const mealCalories = calculateMealCalories(result.menu, libraries.foods)
   const grouped: Array<{ meal: MealGroup; items: typeof result.menu }> = (['早餐', '午餐', '晚餐', '加餐'] as MealGroup[]).map((meal) => ({ meal, items: result.menu.filter((item) => displayMealName(item.meal) === meal) }))
   const abnormal = result.ledger.filter((item) => item.status !== '达标').slice(0, 6)
   const activeSupplements = state.supplementDoses.filter((dose) => dose.enabled).map((dose) => ({ dose, item: libraries.supplements.find((item) => item.id === dose.supplementId) })).filter((entry) => entry.item)
+  const macroTarget = target ?? { calories: result.macro.targetCalories, protein: result.macro.protein, fat: result.macro.fat, carbs: result.macro.carbs, label: result.macro.usedManualCalories ? '手动覆盖' : '公式计算' }
 
   return <div className="view-stack">
     <section className="summary-strip">
-      <div><span>目标热量</span><strong>{result.macro.targetCalories}<small> kcal</small></strong><em>{result.macro.usedManualCalories ? '手动覆盖' : '公式计算'}</em></div>
+      <div><span>目标热量</span><strong>{macroTarget.calories}<small> kcal</small></strong><em>{macroTarget.label}</em></div>
       <div><span>实际菜单</span><strong>{result.actual.calories}<small> kcal</small></strong><em>含已知补剂热量</em></div>
-      <div><span>蛋白质</span><strong>{result.macro.protein}<small> g</small></strong><em>实际 {result.actual.protein}g</em></div>
-      <div><span>脂肪</span><strong>{result.macro.fat}<small> g</small></strong><em>实际 {result.actual.fat}g</em></div>
-      <div><span>碳水</span><strong>{result.macro.carbs}<small> g</small></strong><em>实际 {result.actual.carbs}g</em></div>
+      <div><span>蛋白质</span><strong>{macroTarget.protein}<small> g</small></strong><em>实际 {result.actual.protein}g</em></div>
+      <div><span>脂肪</span><strong>{macroTarget.fat}<small> g</small></strong><em>实际 {result.actual.fat}g</em></div>
+      <div><span>碳水</span><strong>{macroTarget.carbs}<small> g</small></strong><em>实际 {result.actual.carbs}g</em></div>
     </section>
 
     {result.notices.map((notice) => <div className={notice.includes('禁止') ? 'notice danger' : 'notice'} key={notice}>{notice.includes('禁止') ? <ShieldAlert size={18} /> : <CheckCircle2 size={18} />}<span>{notice}</span></div>)}
