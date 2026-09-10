@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Activity, AlertTriangle, Beef, CalendarSync, Check, Flame, ShieldCheck, Utensils } from 'lucide-react'
-import { calculateEngine, getEffectiveLibrariesForState } from '../lib/engine'
-import { calculateMealCalories } from '../lib/mealEnergy'
-import { displayMealName } from '../lib/foodUnits'
+import { Activity, AlertTriangle, Beef, CalendarSync, Check, Flame, ShieldCheck } from 'lucide-react'
+import { calculateEngine } from '../lib/engine'
 import { useNutritionState } from '../state/NutritionContext'
 import { useAppState } from '../state/AppContext'
 import { formatLocalDate, getPlanForDate } from '../lib/trainingPlans'
@@ -23,19 +21,7 @@ export function TodayView() {
   const [dayChoice, setDayChoice] = useState(currentChoice)
   const [anchorNotice, setAnchorNotice] = useState('')
   const result = useMemo(() => calculateEngine(nutritionState), [nutritionState])
-  const libraries = useMemo(() => getEffectiveLibrariesForState(nutritionState), [nutritionState])
-  const mealCalories = useMemo(() => calculateMealCalories(result.menu, libraries.foods), [libraries.foods, result.menu])
   const lockedCount = Object.keys(result.supplementLocks).length
-  const groupedMenu = useMemo(() => {
-    const meals = ['早餐', '午餐', '晚餐', '加餐'] as const
-    return meals.map((meal) => ({
-      meal,
-      items: result.menu.filter((item) => displayMealName(item.meal) === meal).map((item) => ({
-        ...item,
-        name: libraries.foods.find((food) => food.id === item.foodId)?.name ?? '食材资料缺失'
-      }))
-    })).filter((group) => group.items.length)
-  }, [libraries.foods, result.menu])
   const priorityIssues = result.ledger.filter((row) => row.status === '超量' || row.status === '不足').slice(0, 3)
 
   useEffect(() => setDayChoice(currentChoice), [currentChoice])
@@ -89,17 +75,11 @@ export function TodayView() {
       </div>
       <p className={anchorNotice ? 'day-anchor-feedback is-visible' : 'day-anchor-feedback'} aria-live="polite">{anchorNotice || `当前为${currentLabel}。只有点击确认，后续循环才会改变。`}</p>
     </section>
-    <section className="today-command-grid">
-      <div className="today-menu-brief today-panel">
-        <div className="section-heading"><div><h2>今天吃什么</h2><p>按现实单位执行，改分量后会重新计算。</p></div><Utensils size={18} /></div>
-        <div className="meal-brief-list">{groupedMenu.map((group) => <div key={group.meal}><strong>{group.meal}<small>{mealCalories[group.meal]}kcal</small></strong><p>{group.items.map((item) => `${item.name} ${item.amount}${item.unit}`).join(' · ')}</p></div>)}</div>
-      </div>
-      <div className="today-risk-brief today-panel">
-        <div className="section-heading"><div><h2>今天先处理</h2><p>只列出会影响执行的事项。</p></div><AlertTriangle size={18} /></div>
-        {Object.entries(result.supplementLocks).map(([id, reason]) => <div className="priority-row danger" key={id}><strong>{id} 已锁定</strong><span>{reason}</span></div>)}
-        {priorityIssues.map((issue) => <div className="priority-row" key={issue.id}><strong>{issue.name} · {issue.status}</strong><span>{issue.advice}</span></div>)}
-        {!lockedCount && !priorityIssues.length && <div className="priority-row ok"><strong>当前无硬性冲突</strong><span>继续按今日餐单和补剂时序执行。</span></div>}
-      </div>
+    <section className="today-risk-brief today-panel">
+      <div className="section-heading"><div><h2>今天先处理</h2><p>只列出会影响执行的事项。</p></div><AlertTriangle size={18} /></div>
+      {Object.entries(result.supplementLocks).map(([id, reason]) => <div className="priority-row danger" key={id}><strong>{id} 已锁定</strong><span>{reason}</span></div>)}
+      {priorityIssues.map((issue) => <div className="priority-row" key={issue.id}><strong>{issue.name} · {issue.status}</strong><span>{issue.advice}</span></div>)}
+      {!lockedCount && !priorityIssues.length && <div className="priority-row ok"><strong>当前无硬性冲突</strong><span>继续按今日餐单和补剂时序执行。</span></div>}
     </section>
     <TimelineView />
     <details className="advanced-panel today-nutrition-details">

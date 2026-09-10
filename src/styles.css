@@ -533,6 +533,16 @@ label input, label select, label textarea { color: var(--foreground); font-size:
 .random-tag { background: var(--accent-soft); color: var(--primary-strong); font-size: 11px; font-style: normal; padding: 1px 8px; border-radius: 999px; }
 .daily-plan-summary { margin: 12px 2px 0; font-size: 12px; color: var(--muted); }
 
+/* 今日饮食营养合计 */
+.meal-nutrition-summary { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+.meal-nutrition-summary > div { background: var(--surface-soft); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.meal-nutrition-summary span { font-size: 11px; color: var(--muted); }
+.meal-nutrition-summary strong { font-size: 16px; }
+.meal-nutrition-summary small { font-size: 11px; color: var(--muted); font-weight: 400; }
+.meal-nutrition-summary em { font-size: 11px; font-style: normal; }
+.meal-nutrition-summary .delta-over { color: var(--danger, #c45c4e); }
+.meal-nutrition-summary .delta-under { color: var(--primary-strong, #2f7d5c); }
+
 /* 日计划管理页 */
 .daily-plan-grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
 .daily-plan-card { border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--surface); padding: 18px 20px; box-shadow: var(--shadow-soft); }
@@ -561,6 +571,21 @@ label input, label select, label textarea { color: var(--foreground); font-size:
 .daily-plan-add-row { padding: 4px 2px; }
 .daily-plan-preview { margin-top: 12px; }
 .daily-plan-preview summary { font-size: 12px; color: var(--muted); cursor: pointer; }
+
+/* 计划页独立分析与版本对比 */
+.plan-analysis-panel { margin-bottom: 4px; }
+.plan-analysis-grid { display: grid; grid-template-columns: repeat(3, 1fr) 1.5fr; gap: 10px; margin-top: 12px; }
+.analysis-stat, .analysis-suggestion { background: var(--surface-soft); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 4px; }
+.analysis-stat span, .analysis-suggestion span { font-size: 11px; color: var(--muted); }
+.analysis-stat strong { font-size: 17px; }
+.analysis-stat small { font-size: 11px; color: var(--muted); font-weight: 400; }
+.analysis-stat em { font-size: 11px; font-style: normal; }
+.analysis-suggestion p { font-size: 12px; line-height: 1.6; color: var(--foreground); margin: 0; }
+.plan-analysis-targets { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px; }
+.plan-analysis-targets > div { background: var(--surface-soft); border: 1px solid var(--border); border-radius: 12px; padding: 10px 12px; display: flex; flex-direction: column; gap: 2px; }
+.plan-analysis-targets strong { font-size: 14px; }
+.plan-analysis-targets span { font-size: 12px; color: var(--muted); }
+.plan-nutrition-block { margin-top: 10px; display: flex; flex-direction: column; gap: 10px; }
 @media (min-width: 900px) {
   .daily-plan-timeline { grid-template-columns: repeat(2, 1fr); }
   .daily-plan-grid { grid-template-columns: repeat(2, 1fr); }

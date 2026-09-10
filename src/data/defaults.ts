@@ -83,12 +83,8 @@ export const defaultDailyPlans: DailyPlanTemplate[] = [
 ]
 
 export const defaultSchedule: ScheduleItem[] = [
-  { id: 'schedule-wake', title: '起床、温水与补剂', time: '08:30', durationMinutes: 20, category: '补剂', reminderMinutes: 0, notes: '补剂只按已确认剂量记录，不临时加量。', completed: false },
   { id: 'schedule-work', title: '开始工作', time: '09:00', durationMinutes: 180, category: '工作', reminderMinutes: 5, notes: '每60分钟起身活动2至3分钟。', completed: false },
-  { id: 'schedule-lunch', title: '午餐', time: '12:00', durationMinutes: 30, category: '饮食', reminderMinutes: 10, notes: '先选蛋白质和蔬菜，再确定主食份量。', completed: false },
   { id: 'schedule-nap', title: '午睡', time: '12:30', durationMinutes: 30, category: '睡眠', reminderMinutes: 0, notes: '', completed: false },
-  { id: 'schedule-bike', title: '单车有氧', time: '19:30', durationMinutes: 30, category: '训练', reminderMinutes: 10, notes: '腿日若明显疲劳，可缩短至10至15分钟或移到力量训练后。', completed: false },
-  { id: 'schedule-strength', title: '三分化力量训练', time: '20:00', durationMinutes: 60, category: '训练', reminderMinutes: 10, notes: '任何麻木、电击感或突然无力都立即停止当前动作。', completed: false },
   { id: 'schedule-sleep', title: '准备睡觉', time: '23:45', durationMinutes: 525, category: '睡眠', reminderMinutes: 30, notes: '目标睡眠8小时以上。', completed: false }
 ]
 
@@ -527,5 +523,6 @@ export const defaultState: AppState = {
   mealCount: 3, isTrainingDay: true,
   dailyPlans: defaultDailyPlans,
   dailyPlanMode: 'fixed',
+  mealSource: 'plan',
   lastUpdatedAt: new Date().toISOString()
 }

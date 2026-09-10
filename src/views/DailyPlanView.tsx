@@ -1,9 +1,13 @@
 import { useMemo, useState } from 'react'
-import { CalendarDays, Check, Copy, Edit3, Plus, Save, Sparkles, Trash2, X } from 'lucide-react'
+import { CalendarDays, Check, Copy, Edit3, GitCompareArrows, Plus, Save, Scale, Sparkles, Trash2, X } from 'lucide-react'
 import { useAppState } from '../state/AppContext'
+import { useNutritionState } from '../state/NutritionContext'
 import { createId } from '../lib/ids'
 import { dailyPlanCategoryClass, getActivePlan, materializeItems } from '../lib/dailyPlan'
-import type { DailyPlanDayType, DailyPlanItem, DailyPlanItemKind, DailyPlanTemplate } from '../types'
+import { analyzePlanNutrition, compareMacro } from '../lib/planNutrition'
+import { diffPlans } from '../lib/planDiff'
+import { calculateEngine } from '../lib/engine'
+import type { DailyPlanDayType, DailyPlanItem, DailyPlanItemKind, DailyPlanTemplate, MacroTotals } from '../types'
 
 const KIND_OPTIONS: DailyPlanItemKind[] = ['饮食', '补剂', '训练', '全天']
 const DAYTYPE_OPTIONS: Array<{ value: DailyPlanDayType; label: string }> = [
@@ -19,23 +23,69 @@ const emptyDraft: Omit<DailyPlanItem, 'id'> = {
 function buildTemplateFromItems(name: string, dayType: DailyPlanDayType, items: DailyPlanItem[], source: string, userImported: boolean): DailyPlanTemplate {
   return {
     id: createId('plan-daily'), name, dayType, active: true, items,
-    updatedAt: new Date().toISOString(), source, userImported
+    updatedAt: new Date().toISOString(), source, userImported, history: []
   }
+}
+
+function targetAsMacro(target: { targetCalories: number; protein: number; fat: number; carbs: number }): MacroTotals {
+  return { calories: target.targetCalories, protein: target.protein, fat: target.fat, carbs: target.carbs }
+}
+
+function suggestAdjustment(logs: Array<{ date: string; weightKg: number }>): string {
+  if (logs.length < 2) return '记录至少 2 天体重后再给微调建议。'
+  const last = logs[logs.length - 1]
+  const lastDate = new Date(`${last.date}T00:00:00`).getTime()
+  const fourteen = logs.filter((log) => (lastDate - new Date(`${log.date}T00:00:00`).getTime()) / 86400000 >= 13)
+  if (!fourteen.length) return '数据还不足 14 天，先继续记录，我每天帮你对比。'
+  const start = fourteen[fourteen.length - 1]
+  const change = Math.round((last.weightKg - start.weightKg) * 10) / 10
+  if (change <= -2) return `14天降 ${Math.abs(change)}kg：减脂偏快，可适当回补碳水、避免代谢过快下滑。`
+  if (change <= -0.5) return `14天降 ${Math.abs(change)}kg：节奏正常，维持当前缺口继续观察。`
+  if (change < 0.5) return '14天体重基本没动：建议每日碳水减 15～20g（或加一点有氧），一周后再看。'
+  return `14天升 ${change}kg：建议降低碳水或脂肪，或复查全天热量是否超标。`
 }
 
 export function DailyPlanView() {
   const { state, setState } = useAppState()
+  const { state: nutritionState } = useNutritionState()
   const [editingPlanId, setEditingPlanId] = useState<string | null>(null)
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [draft, setDraft] = useState<Omit<DailyPlanItem, 'id'>>(emptyDraft)
   const [planDraft, setPlanDraft] = useState<{ name: string; dayType: DailyPlanDayType; active: boolean } | null>(null)
   const [notice, setNotice] = useState('')
+  const [diffPlanId, setDiffPlanId] = useState<string | null>(null)
+
+  const result = useMemo(() => calculateEngine(nutritionState), [nutritionState])
+  const target = result.macro
 
   const trainingPlan = useMemo(() => getActivePlan(state, 'training'), [state])
   const restPlan = useMemo(() => getActivePlan(state, 'rest'), [state])
   const allPlans = state.dailyPlans ?? []
 
-  const editingPlan = editingPlanId ? allPlans.find((plan) => plan.id === editingPlanId) : null
+  const trainingNutrition = useMemo(() => trainingPlan ? analyzePlanNutrition(trainingPlan) : null, [trainingPlan])
+  const restNutrition = useMemo(() => restPlan ? analyzePlanNutrition(restPlan) : null, [restPlan])
+
+  const bodyTrend = useMemo(() => {
+    const logs = [...state.bodyLogs].filter((log) => log.weightKg > 0).sort((a, b) => a.date.localeCompare(b.date))
+    const last = logs[logs.length - 1]
+    const prev = logs[logs.length - 2]
+    const recent = logs.slice(-7)
+    const morningAvg = recent.filter((log) => typeof log.morningState === 'number' && log.morningState > 0)
+    const sleepAvg = recent.filter((log) => typeof log.sleepQuality === 'number' && log.sleepQuality > 0)
+    return {
+      lastWeight: last?.weightKg ?? null,
+      dayChange: last && prev ? Math.round((last.weightKg - prev.weightKg) * 10) / 10 : null,
+      morningAvg: morningAvg.length ? Math.round(morningAvg.reduce((sum, log) => sum + (log.morningState ?? 0), 0) / morningAvg.length * 10) / 10 : null,
+      sleepAvg: sleepAvg.length ? Math.round(sleepAvg.reduce((sum, log) => sum + (log.sleepQuality ?? 0), 0) / sleepAvg.length * 10) / 10 : null,
+      suggestion: suggestAdjustment(logs)
+    }
+  }, [state.bodyLogs])
+
+  const withHistory = (plan: DailyPlanTemplate, nextItems: DailyPlanItem[], meta: Partial<DailyPlanTemplate> = {}) => {
+    const snapshot = { versionId: createId('hist'), capturedAt: new Date().toISOString(), name: plan.name, items: plan.items.map((it) => ({ ...it })) }
+    const history = [...(plan.history ?? []), snapshot].slice(-20)
+    return { ...plan, ...meta, items: nextItems, history, updatedAt: new Date().toISOString() }
+  }
 
   const startEditItem = (item: DailyPlanItem) => {
     const { id: _id, ...rest } = item
@@ -55,21 +105,19 @@ export function DailyPlanView() {
         const items = editingItemId
           ? plan.items.map((it) => it.id === editingItemId ? { ...draft, id: it.id } : it)
           : [...plan.items, { ...draft, id: createId('dpi') }]
-        return { ...plan, items, updatedAt: new Date().toISOString() }
+        return withHistory(plan, items)
       }),
       lastUpdatedAt: new Date().toISOString()
     }))
     setEditingItemId(null)
     setDraft(emptyDraft)
-    setNotice('已保存该时段项目。')
+    setNotice('已保存该时段项目，并留存了上一版用于对比。')
   }
 
   const removeItem = (planId: string, itemId: string) => {
     setState((current) => ({
       ...current,
-      dailyPlans: (current.dailyPlans ?? []).map((plan) => plan.id !== planId ? plan : {
-        ...plan, items: plan.items.filter((it) => it.id !== itemId), updatedAt: new Date().toISOString()
-      }),
+      dailyPlans: (current.dailyPlans ?? []).map((plan) => plan.id !== planId ? plan : withHistory(plan, plan.items.filter((it) => it.id !== itemId))),
       lastUpdatedAt: new Date().toISOString()
     }))
     setNotice('已删除该时段项目。')
@@ -87,11 +135,11 @@ export function DailyPlanView() {
 
   const setActive = (planId: string) => {
     setState((current) => {
-      const target = (current.dailyPlans ?? []).find((plan) => plan.id === planId)
-      if (!target) return current
+      const targetPlan = (current.dailyPlans ?? []).find((plan) => plan.id === planId)
+      if (!targetPlan) return current
       return {
         ...current,
-        dailyPlans: (current.dailyPlans ?? []).map((plan) => plan.dayType === target.dayType
+        dailyPlans: (current.dailyPlans ?? []).map((plan) => plan.dayType === targetPlan.dayType
           ? { ...plan, active: plan.id === planId, updatedAt: new Date().toISOString() }
           : plan),
         lastUpdatedAt: new Date().toISOString()
@@ -110,7 +158,8 @@ export function DailyPlanView() {
       active: false,
       items: source.items.map((it) => ({ ...it, id: createId('dpi') })),
       updatedAt: new Date().toISOString(),
-      userImported: true
+      userImported: true,
+      history: []
     }
     setState((current) => ({ ...current, dailyPlans: [...(current.dailyPlans ?? []), cloned], lastUpdatedAt: new Date().toISOString() }))
     setNotice('已复制为新模板，可重命名后启用。')
@@ -136,7 +185,7 @@ export function DailyPlanView() {
       ...current,
       dailyPlans: (current.dailyPlans ?? []).map((plan) => {
         if (plan.id !== planId) return plan
-        return { ...plan, name: planDraft.name.trim() || plan.name, dayType: planDraft.dayType, updatedAt: new Date().toISOString() }
+        return withHistory(plan, plan.items, { name: planDraft.name.trim() || plan.name, dayType: planDraft.dayType })
       }),
       lastUpdatedAt: new Date().toISOString()
     }))
@@ -154,6 +203,60 @@ export function DailyPlanView() {
     }))
     setPlanDraft(null)
     setNotice('已新建模板，记得至少添加一项时段项目。')
+  }
+
+  const renderNutrition = (plan: DailyPlanTemplate) => {
+    const nutrition = analyzePlanNutrition(plan)
+    const delta = compareMacro(nutrition.totals, targetAsMacro(target))
+    return (
+      <details className="daily-plan-preview">
+        <summary><Scale size={14} />营养分析（合计 / 每餐）</summary>
+        <div className="plan-nutrition-block">
+          <div className="meal-nutrition-summary">
+            <div><span>热量</span><strong>{nutrition.totals.calories}<small> / {target.targetCalories}</small></strong><em className={delta.calories > 0 ? 'delta-over' : 'delta-under'}>{delta.calories >= 0 ? '+' : ''}{delta.calories}</em></div>
+            <div><span>蛋白质</span><strong>{nutrition.totals.protein}<small> / {target.protein}</small></strong><em className={delta.protein > 0 ? 'delta-over' : 'delta-under'}>{delta.protein >= 0 ? '+' : ''}{delta.protein}</em></div>
+            <div><span>脂肪</span><strong>{nutrition.totals.fat}<small> / {target.fat}</small></strong><em className={delta.fat > 0 ? 'delta-over' : 'delta-under'}>{delta.fat >= 0 ? '+' : ''}{delta.fat}</em></div>
+            <div><span>碳水</span><strong>{nutrition.totals.carbs}<small> / {target.carbs}</small></strong><em className={delta.carbs > 0 ? 'delta-over' : 'delta-under'}>{delta.carbs >= 0 ? '+' : ''}{delta.carbs}</em></div>
+          </div>
+          {nutrition.unknownFoods.length > 0 && <p className="muted">未匹配到营养值的食物：{nutrition.unknownFoods.join('、')}（不计入合计）</p>}
+          <div className="compact-table">
+            {Object.entries(nutrition.bySlot).map(([slot, macro]) => (
+              <div key={slot}><strong>{slot}</strong><span>{macro.calories}kcal</span><span>P{macro.protein} · F{macro.fat} · C{macro.carbs}</span></div>
+            ))}
+          </div>
+        </div>
+      </details>
+    )
+  }
+
+  const renderDiff = (plan: DailyPlanTemplate) => {
+    const history = plan.history ?? []
+    if (!history.length) return null
+    const lastHist = history[history.length - 1]
+    const prevTemplate: DailyPlanTemplate = { id: 'prev', name: lastHist.name, dayType: plan.dayType, active: false, items: lastHist.items, updatedAt: lastHist.capturedAt }
+    const diff = diffPlans(prevTemplate, plan)
+    const open = diffPlanId === plan.id
+    return (
+      <details className="daily-plan-preview" open={open} onToggle={() => setDiffPlanId(open ? null : plan.id)}>
+        <summary><GitCompareArrows size={14} />对比上一版（{new Date(lastHist.capturedAt).toLocaleString()}）</summary>
+        <div className="plan-nutrition-block">
+          <p className="muted">新增 {diff.added} · 删除 {diff.removed} · 变化 {diff.changed}</p>
+          <div className="meal-nutrition-summary">
+            <div><span>热量</span><strong>{diff.nextTotals.calories}<small> vs {diff.prevTotals.calories}</small></strong><em className={diff.totalsDelta.calories > 0 ? 'delta-over' : 'delta-under'}>{diff.totalsDelta.calories >= 0 ? '+' : ''}{diff.totalsDelta.calories}</em></div>
+            <div><span>蛋白质</span><strong>{diff.nextTotals.protein}<small> vs {diff.prevTotals.protein}</small></strong><em className={diff.totalsDelta.protein > 0 ? 'delta-over' : 'delta-under'}>{diff.totalsDelta.protein >= 0 ? '+' : ''}{diff.totalsDelta.protein}</em></div>
+            <div><span>脂肪</span><strong>{diff.nextTotals.fat}<small> vs {diff.prevTotals.fat}</small></strong><em className={diff.totalsDelta.fat > 0 ? 'delta-over' : 'delta-under'}>{diff.totalsDelta.fat >= 0 ? '+' : ''}{diff.totalsDelta.fat}</em></div>
+            <div><span>碳水</span><strong>{diff.nextTotals.carbs}<small> vs {diff.prevTotals.carbs}</small></strong><em className={diff.totalsDelta.carbs > 0 ? 'delta-over' : 'delta-under'}>{diff.totalsDelta.carbs >= 0 ? '+' : ''}{diff.totalsDelta.carbs}</em></div>
+          </div>
+          {diff.items.length === 0 ? <p className="empty-inline">两版内容一致。</p> : (
+            <div className="compact-table">
+              {diff.items.map((item) => (
+                <div key={item.key}><span className={`status status-${item.change === '删除' ? '不足' : item.change === '新增' ? '达标' : '超量'}`}>{item.change}</span><strong>{item.foodName}</strong><span>{item.prevAmount && item.nextAmount ? `${item.prevAmount} → ${item.nextAmount}` : item.prevAmount || item.nextAmount}</span></div>
+              ))}
+            </div>
+          )}
+        </div>
+      </details>
+    )
   }
 
   const renderPlan = (plan: DailyPlanTemplate) => {
@@ -251,6 +354,8 @@ export function DailyPlanView() {
           )}
         </div>
 
+        {renderNutrition(plan)}
+        {renderDiff(plan)}
         <details className="daily-plan-preview">
           <summary><Sparkles size={14} />预览（含「随机」一栏）</summary>
           <div className="compact-table">
@@ -268,6 +373,39 @@ export function DailyPlanView() {
       <section className="data-actions">
         <button className="button" onClick={startNewPlan}><Plus size={16} />新建模板</button>
         <a className="button" href="#import-section" onClick={() => window.dispatchEvent(new CustomEvent('hengdong-jump-to-import'))}><CalendarDays size={16} />导入新计划</a>
+      </section>
+
+      <section className="daily-plan-card plan-analysis-panel">
+        <div className="section-heading"><div><h2>独立分析</h2><p>用体重趋势对照能量公式，慢慢微调饮食结构。体重与状态在「趋势」页记录。</p></div><Scale size={18} /></div>
+        <div className="plan-analysis-grid">
+          <div className="analysis-stat">
+            <span>最近体重</span>
+            <strong>{bodyTrend.lastWeight ?? '—'}<small> kg</small></strong>
+            {bodyTrend.dayChange !== null && <em className={bodyTrend.dayChange > 0 ? 'delta-over' : 'delta-under'}>{bodyTrend.dayChange >= 0 ? '+' : ''}{bodyTrend.dayChange} 较昨日</em>}
+          </div>
+          <div className="analysis-stat">
+            <span>近7天早上状态</span>
+            <strong>{bodyTrend.morningAvg ?? '—'}<small> /5</small></strong>
+          </div>
+          <div className="analysis-stat">
+            <span>近7天入睡质量</span>
+            <strong>{bodyTrend.sleepAvg ?? '—'}<small> /5</small></strong>
+          </div>
+          <div className="analysis-suggestion">
+            <span>微调建议</span>
+            <p>{bodyTrend.suggestion}</p>
+          </div>
+        </div>
+        {(trainingNutrition || restNutrition) && (
+          <div className="plan-analysis-targets">
+            {trainingNutrition && (
+              <div><strong>{trainingPlan?.name ?? '训练日'}食物合计</strong><span>{trainingNutrition.totals.calories} kcal</span><span>P{trainingNutrition.totals.protein} · F{trainingNutrition.totals.fat} · C{trainingNutrition.totals.carbs}</span><span className="muted">目标 {target.targetCalories} kcal</span></div>
+            )}
+            {restNutrition && (
+              <div><strong>{restPlan?.name ?? '休息日'}食物合计</strong><span>{restNutrition.totals.calories} kcal</span><span>P{restNutrition.totals.protein} · F{restNutrition.totals.fat} · C{restNutrition.totals.carbs}</span><span className="muted">目标 {target.targetCalories} kcal</span></div>
+            )}
+          </div>
+        )}
       </section>
 
       {planDraft && editingPlanId === null && (

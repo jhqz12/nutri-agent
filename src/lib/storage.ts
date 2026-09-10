@@ -2,7 +2,7 @@ import type { AppState } from '../types'
 import { defaultDailyPlans, defaultLegExercises, defaultPullExercises, defaultPushExercises, defaultState } from '../data/defaults'
 
 const STORAGE_KEY = 'personal-fitness-dashboard-v1'
-const CURRENT_DATA_VERSION = 8
+const CURRENT_DATA_VERSION = 9
 
 function appendMissingExercises(
   planDays: AppState['planDays'],
@@ -75,6 +75,15 @@ export function migrateState(savedState: Partial<AppState>): AppState {
       ? mergedState.dailyPlans
       : structuredClone(defaultDailyPlans)
     mergedState.dailyPlanMode = mergedState.dailyPlanMode === 'random' ? 'random' : 'fixed'
+  }
+  if (savedVersion < 9) {
+    mergedState.mealSource = mergedState.mealSource === 'auto' ? 'auto' : 'plan'
+    mergedState.dailyPlans = (mergedState.dailyPlans ?? []).map((plan) => ({ ...plan, history: Array.isArray(plan.history) ? plan.history : [] }))
+    mergedState.bodyLogs = (mergedState.bodyLogs ?? []).map((log) => ({
+      ...log,
+      morningState: typeof log.morningState === 'number' ? log.morningState : undefined,
+      sleepQuality: typeof log.sleepQuality === 'number' ? log.sleepQuality : undefined
+    }))
   }
 
   for (const plan of planDays) {

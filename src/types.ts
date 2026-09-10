@@ -136,6 +136,13 @@ export interface DailyPlanItem {
   locked: boolean
 }
 
+export interface DailyPlanHistoryEntry {
+  versionId: string
+  capturedAt: string
+  name: string
+  items: DailyPlanItem[]
+}
+
 export interface DailyPlanTemplate {
   id: string
   name: string
@@ -145,7 +152,10 @@ export interface DailyPlanTemplate {
   updatedAt: string
   source?: string
   userImported?: boolean
+  history?: DailyPlanHistoryEntry[]
 }
+
+export type MealSource = 'plan' | 'auto'
 
 export interface FoodItem {
   id: string
@@ -195,6 +205,9 @@ export interface BodyLog {
   dietAdherence: number
   systolic?: number | null
   diastolic?: number | null
+  morningState?: number
+  sleepQuality?: number
+  mood?: string
 }
 
 export interface Supplement {
@@ -225,6 +238,7 @@ export interface AppState {
   isTrainingDay: boolean
   dailyPlans: DailyPlanTemplate[]
   dailyPlanMode: DailyPlanMode
+  mealSource: MealSource
   lastUpdatedAt: string
 }
 
