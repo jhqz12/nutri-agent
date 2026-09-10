@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { CalendarDays, ChartNoAxesCombined, Check, Database, Dumbbell, Palette, Settings, Utensils, X, type LucideIcon } from 'lucide-react'
+import { CalendarDays, ChartNoAxesCombined, Check, ClipboardList, Database, Dumbbell, Palette, Settings, Utensils, X, type LucideIcon } from 'lucide-react'
 import gsap from 'gsap'
 import { useGSAP } from '@gsap/react'
 import type { TabId } from './types'
@@ -10,12 +10,14 @@ import { NutritionView } from './views/NutritionView'
 import { ProgressView } from './views/ProgressView'
 import { DataView } from './views/DataView'
 import { SettingsView } from './views/SettingsView'
+import { DailyPlanView } from './views/DailyPlanView'
 import { Onboarding } from './views/Onboarding'
 
 const navigation: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
   { id: 'today', label: '今日', icon: CalendarDays },
   { id: 'training', label: '训练', icon: Dumbbell },
   { id: 'nutrition', label: '饮食', icon: Utensils },
+  { id: 'plan', label: '日计划', icon: ClipboardList },
   { id: 'progress', label: '趋势', icon: ChartNoAxesCombined },
   { id: 'data', label: '数据', icon: Database },
   { id: 'settings', label: '设置', icon: Settings }
@@ -46,6 +48,7 @@ const pageTitles: Record<TabId, { title: string; subtitle: string }> = {
   nutrition: { title: '饮食规划', subtitle: '在现实可买到的食物里，尽量接近全天目标。' },
   progress: { title: '身体趋势', subtitle: '看趋势，不被某一天的体重或体感带着走。' },
   data: { title: '数据管理', subtitle: '常用导入在前，专业六库与版本历史按需展开。' },
+  plan: { title: '日计划管理', subtitle: '随时导入新模板、编辑训练日 / 休息日的饮食与补剂时间轴。' },
   settings: { title: '个人设置', subtitle: '目标可以调整，健康风险不会被自动忽略。' }
 }
 
@@ -126,6 +129,7 @@ export function App() {
         {tab === 'today' && <TodayView />}
         {tab === 'training' && <TrainingView />}
         {tab === 'nutrition' && <NutritionView />}
+        {tab === 'plan' && <DailyPlanView />}
         {tab === 'progress' && <ProgressView />}
         {tab === 'data' && <DataView />}
         {tab === 'settings' && <SettingsView />}

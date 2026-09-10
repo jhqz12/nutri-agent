@@ -1,4 +1,4 @@
-export type TabId = 'today' | 'training' | 'nutrition' | 'progress' | 'data' | 'settings'
+export type TabId = 'today' | 'training' | 'nutrition' | 'plan' | 'progress' | 'data' | 'settings'
 export type TrainingSplit = string
 export type TrainingTemplate = '三分化' | '五分化' | '自定义'
 export type TrainingFrequency = '连续循环' | '练一休一'
@@ -118,6 +118,35 @@ export interface CoachMessage {
   suggestions?: CoachPlanSuggestion[]
 }
 
+export type DailyPlanItemKind = '饮食' | '补剂' | '训练' | '全天'
+export type DailyPlanDayType = 'training' | 'rest'
+export type DailyPlanMode = 'fixed' | 'random'
+
+export interface DailyPlanItem {
+  id: string
+  time: string
+  label: string
+  kind: DailyPlanItemKind
+  foodName: string
+  foodId?: string | null
+  supplementId?: string | null
+  amount: number
+  unit: string
+  note: string
+  locked: boolean
+}
+
+export interface DailyPlanTemplate {
+  id: string
+  name: string
+  dayType: DailyPlanDayType
+  active: boolean
+  items: DailyPlanItem[]
+  updatedAt: string
+  source?: string
+  userImported?: boolean
+}
+
 export interface FoodItem {
   id: string
   name: string
@@ -194,6 +223,8 @@ export interface AppState {
   supplements: Supplement[]
   mealCount: number
   isTrainingDay: boolean
+  dailyPlans: DailyPlanTemplate[]
+  dailyPlanMode: DailyPlanMode
   lastUpdatedAt: string
 }
 

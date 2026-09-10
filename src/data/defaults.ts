@@ -1,4 +1,86 @@
-import type { AppState, BodyLog, Exercise, FoodItem, Recipe, ScheduleItem } from '../types'
+import type { AppState, BodyLog, DailyPlanItem, DailyPlanTemplate, Exercise, FoodItem, Recipe, ScheduleItem } from '../types'
+
+/**
+ * 谭成义减脂饮食模板（V3.0+）
+ * 训练日 / 休息日按时间段排列：醒后→早餐→第二餐→（练前/练中/力量后/有氧）→第四餐→睡前
+ * 默认时间已按一般作息估填，导入新模板或手动调整后以最新内容为准。
+ * 蔬菜全天不限量，不在模板中体现。
+ */
+const buildItem = (id: string, time: string, label: string, kind: DailyPlanItem['kind'], foodName: string, amount: number, unit: string, note: string, locked = false): DailyPlanItem => ({
+  id, time, label, kind, foodName, amount, unit, note, locked,
+  foodId: null, supplementId: null
+})
+
+const trainingDayItems: DailyPlanItem[] = [
+  buildItem('tdi-1', '07:00', '全天', '全天', '动物黄油', 5, 'g', '烹饪或直接食用，全天总量', true),
+  buildItem('tdi-2', '07:30', '醒后', '饮食', '发酵茶', 300, 'ml', '黑茶 / 红茶 / 乌龙茶三选一'),
+  buildItem('tdi-3', '07:30', '醒后', '补剂', '维生素C', 1, 'g', '随茶冲服'),
+  buildItem('tdi-4', '08:00', '早餐', '饮食', '燕麦', 70, 'g', '生重'),
+  buildItem('tdi-5', '08:00', '早餐', '饮食', '全蛋', 2, '个', '约 100g'),
+  buildItem('tdi-6', '08:00', '早餐', '补剂', '复合维生素B', 1, '片', '随餐'),
+  buildItem('tdi-7', '08:00', '早餐', '补剂', '维生素D', 2, '片', '2 vd；随餐'),
+  buildItem('tdi-8', '11:30', '第二餐', '饮食', '土豆或红薯', 250, 'g', '二选一'),
+  buildItem('tdi-9', '11:30', '第二餐', '饮食', '生米', 80, 'g', '熟重 ≈ 80 × 2.5 ≈ 200g'),
+  buildItem('tdi-10', '11:30', '第二餐', '饮食', '牛肉或鸡肉', 120, 'g', '二选一；瘦牛肉 / 去皮鸡肉'),
+  buildItem('tdi-11', '11:30', '第二餐', '补剂', '铬片', 1, '片', '随餐'),
+  buildItem('tdi-12', '15:30', '练前', '补剂', '肌酸', 5, 'g', '训练前 20~30 分钟'),
+  buildItem('tdi-13', '15:30', '练前', '补剂', '葡萄糖粉', 10, 'g', '配水冲服'),
+  buildItem('tdi-14', '16:00', '练中', '补剂', '葡萄糖粉', 10, 'g', '训练中分次补，可多喝'),
+  buildItem('tdi-15', '17:30', '力量后', '补剂', '蛋白粉', 0.5, '勺', '半勺'),
+  buildItem('tdi-16', '17:30', '力量后', '饮食', '香蕉', 1, '根', '中号'),
+  buildItem('tdi-17', '17:30', '力量后', '补剂', '铬片', 1, '片', '力量训练后'),
+  buildItem('tdi-18', '18:00', '有氧', '训练', '单车或低强度有氧', 25, 'min', '心率不超过最大心率 70%'),
+  buildItem('tdi-19', '19:00', '第四餐', '饮食', '土豆或红薯', 250, 'g', '二选一'),
+  buildItem('tdi-20', '19:00', '第四餐', '饮食', '生米', 80, 'g', '熟重 ≈ 200g'),
+  buildItem('tdi-21', '19:00', '第四餐', '饮食', '鸡肉', 120, 'g', '去皮'),
+  buildItem('tdi-22', '22:30', '睡前', '补剂', '鱼油 EPA 1500mg', 2, '粒', '随少量水'),
+  buildItem('tdi-23', '22:30', '睡前', '补剂', '镁', 2, '粒', '随少量水')
+]
+
+const restDayItems: DailyPlanItem[] = [
+  buildItem('rdi-1', '07:00', '全天', '全天', '动物黄油', 15, 'g', '烹饪或直接食用，全天总量', true),
+  buildItem('rdi-2', '07:30', '醒后', '饮食', '发酵茶', 300, 'ml', '黑茶 / 红茶 / 乌龙茶三选一'),
+  buildItem('rdi-3', '07:30', '醒后', '补剂', '维生素C', 1, 'g', '随茶冲服'),
+  buildItem('rdi-4', '08:00', '早餐', '饮食', '燕麦', 60, 'g', '生重'),
+  buildItem('rdi-5', '08:00', '早餐', '饮食', '全蛋', 2, '个', '约 100g'),
+  buildItem('rdi-6', '08:00', '早餐', '补剂', '复合维生素B', 2, '片', '随餐'),
+  buildItem('rdi-7', '08:00', '早餐', '补剂', '维生素D', 2, '片', '2 vd；随餐'),
+  buildItem('rdi-8', '11:30', '第二餐', '饮食', '土豆或红薯', 250, 'g', '二选一'),
+  buildItem('rdi-9', '11:30', '第二餐', '饮食', '生米', 60, 'g', '熟重 ≈ 60 × 2.5 ≈ 150g'),
+  buildItem('rdi-10', '11:30', '第二餐', '饮食', '牛肉或鸡肉', 120, 'g', '二选一；瘦牛肉 / 去皮鸡肉'),
+  buildItem('rdi-11', '11:30', '第二餐', '补剂', '铬片', 1, '片', '随餐'),
+  buildItem('rdi-12', '15:30', '练前', '饮食', '柚子', 200, 'g', '训练前 20 分钟'),
+  buildItem('rdi-13', '16:00', '有氧', '训练', '单车或低强度有氧', 40, 'min', '心率不超过最大心率 70%'),
+  buildItem('rdi-14', '19:00', '第四餐', '饮食', '土豆或红薯', 250, 'g', '二选一'),
+  buildItem('rdi-15', '19:00', '第四餐', '饮食', '生米', 60, 'g', '熟重 ≈ 150g'),
+  buildItem('rdi-16', '19:00', '第四餐', '饮食', '牛肉或鸡肉', 120, 'g', '二选一'),
+  buildItem('rdi-17', '19:00', '第四餐', '补剂', '铬片', 1, '片', '随餐'),
+  buildItem('rdi-18', '22:30', '睡前', '补剂', '鱼油 EPA 1500mg', 2, '粒', '随少量水'),
+  buildItem('rdi-19', '22:30', '睡前', '补剂', '镁', 2, '粒', '随少量水')
+]
+
+export const defaultDailyPlans: DailyPlanTemplate[] = [
+  {
+    id: 'plan-daily-training',
+    name: '谭成义·训练日',
+    dayType: 'training',
+    active: true,
+    items: trainingDayItems,
+    updatedAt: new Date('2026-09-10').toISOString(),
+    source: '谭成义减脂计算表 V3.0',
+    userImported: false
+  },
+  {
+    id: 'plan-daily-rest',
+    name: '谭成义·休息日',
+    dayType: 'rest',
+    active: true,
+    items: restDayItems,
+    updatedAt: new Date('2026-09-10').toISOString(),
+    source: '谭成义减脂计算表 V3.0',
+    userImported: false
+  }
+]
 
 export const defaultSchedule: ScheduleItem[] = [
   { id: 'schedule-wake', title: '起床、温水与补剂', time: '08:30', durationMinutes: 20, category: '补剂', reminderMinutes: 0, notes: '补剂只按已确认剂量记录，不临时加量。', completed: false },
@@ -442,5 +524,8 @@ export const defaultState: AppState = {
     { id: 'supp-d3', name: '维生素D3', dose: '按化验与医生建议', time: '12:00', enabled: true },
     { id: 'supp-magnesium', name: '镁', dose: '按标签剂量', time: '23:00', enabled: true }
   ],
-  mealCount: 3, isTrainingDay: true, lastUpdatedAt: new Date().toISOString()
+  mealCount: 3, isTrainingDay: true,
+  dailyPlans: defaultDailyPlans,
+  dailyPlanMode: 'fixed',
+  lastUpdatedAt: new Date().toISOString()
 }

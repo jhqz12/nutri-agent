@@ -10,15 +10,16 @@ import { defaultTendencyForCategory, getFoodCategory } from '../lib/foodUnits'
 import { getEffectiveLibrariesForState } from '../lib/engine'
 import { createOverride } from '../lib/overlay'
 import type { FoodRecord, NutrientMap } from '../nutritionTypes'
-import type { BodyLog, ImportPreview, MealCategory, Recipe, WorkoutSession } from '../types'
+import type { BodyLog, DailyPlanDayType, DailyPlanItem, DailyPlanItemKind, DailyPlanTemplate, ImportPreview, MealCategory, Recipe, WorkoutSession } from '../types'
 
-type ImportType = 'food' | 'recipe' | 'body' | 'training'
+type ImportType = 'food' | 'recipe' | 'body' | 'training' | 'dailyPlan'
 type DuplicateMode = 'skip' | 'replace' | 'merge'
 
 const requiredColumns: Record<Exclude<ImportType, 'food'>, string[]> = {
   recipe: ['名称', '餐别', '食材', '热量', '蛋白质', '脂肪', '碳水'],
   body: ['日期', '体重', '腰围', '睡眠', '步数', '精力'],
-  training: ['日期', '训练日', '睡眠', '精力']
+  training: ['日期', '训练日', '睡眠', '精力'],
+  dailyPlan: ['计划名称', '类型', '时段标签', '名称', '份量']
 }
 
 const nutrientTargetMap: Partial<Record<FoodImportTarget, string>> = {
@@ -31,6 +32,111 @@ function optionalNumber(value: unknown, label: string): number | null {
   const number = Number(text)
   if (!Number.isFinite(number) || number < 0) throw new Error(`${label}存在空值、非数字或负数。`)
   return number
+}
+
+const DAILY_PLAN_FIELDS: Array<{ id: keyof DailyPlanRow; label: string; required: boolean; aliases: string[] }> = [
+  { id: 'planName', label: '计划名称', required: true, aliases: ['计划名称', 'plan', 'planname', '模板', '模板名称'] },
+  { id: 'dayType', label: '类型', required: true, aliases: ['类型', '日型', 'daytype', '类别'] },
+  { id: 'slot', label: '时段标签', required: true, aliases: ['时段标签', 'slot', 'label', '时段', '餐别'] },
+  { id: 'time', label: '时间', required: false, aliases: ['时间', 'time', '时刻', '开始时间'] },
+  { id: 'kind', label: '类别', required: false, aliases: ['类别', 'kind', '分类'] },
+  { id: 'name', label: '名称', required: true, aliases: ['名称', 'name', '项目', '食物', '食材'] },
+  { id: 'amount', label: '份量', required: true, aliases: ['份量', 'amount', '数量', '克数'] },
+  { id: 'unit', label: '单位', required: false, aliases: ['单位', 'unit', '度量'] },
+  { id: 'note', label: '备注', required: false, aliases: ['备注', 'note', '说明'] },
+  { id: 'locked', label: '锁定', required: false, aliases: ['锁定', 'locked', '不参与随机'] }
+]
+
+interface DailyPlanRow {
+  planName: string
+  dayType: string
+  slot: string
+  time: string
+  kind: string
+  name: string
+  amount: number
+  unit: string
+  note: string
+  locked: string
+}
+
+function autoMapDailyPlanColumns(headers: string[]): Record<string, string> {
+  const map: Record<string, string> = {}
+  for (const field of DAILY_PLAN_FIELDS) {
+    const found = headers.find((header) => field.aliases.some((alias) => normalizeImportHeader(header) === normalizeImportHeader(alias)))
+    if (found) map[field.id] = found
+  }
+  return map
+}
+
+function mapDailyPlanRow(row: Record<string, unknown>, mapping: Record<string, string>): DailyPlanRow {
+  const pick = (key: keyof DailyPlanRow) => String(row[mapping[key] ?? ''] ?? '').trim()
+  const amount = Number(pick('amount') || '0')
+  if (!Number.isFinite(amount) || amount < 0) throw new Error(`「${pick('name') || '未命名'}」的份量无效。`)
+  return {
+    planName: pick('planName'),
+    dayType: pick('dayType'),
+    slot: pick('slot') || '其他',
+    time: pick('time') || '08:00',
+    kind: pick('kind') || '饮食',
+    name: pick('name'),
+    amount,
+    unit: pick('unit') || 'g',
+    note: pick('note'),
+    locked: pick('locked')
+  }
+}
+
+function normalizeDayType(value: string): DailyPlanDayType {
+  const v = value.trim()
+  if (['rest', '休息', '休', '休息日'].includes(v)) return 'rest'
+  return 'training'
+}
+
+function normalizeKind(value: string): DailyPlanItemKind {
+  const v = value.trim()
+  if (['补剂', '补充', 'supplement'].includes(v)) return '补剂'
+  if (['训练', 'training'].includes(v)) return '训练'
+  if (['全天', 'all-day', 'allday'].includes(v)) return '全天'
+  return '饮食'
+}
+
+function groupDailyPlanRows(rows: DailyPlanRow[]): DailyPlanTemplate[] {
+  const groups = new Map<string, DailyPlanTemplate>()
+  for (const row of rows) {
+    if (!row.planName || !row.name) continue
+    const dayType = normalizeDayType(row.dayType)
+    const key = `${row.planName}|${dayType}`
+    if (!groups.has(key)) {
+      groups.set(key, {
+        id: createId('plan-daily'),
+        name: row.planName,
+        dayType,
+        active: true,
+        items: [],
+        updatedAt: new Date().toISOString(),
+        source: '文件导入',
+        userImported: true
+      })
+    }
+    const template = groups.get(key)!
+    const locked = /^(1|true|是|锁定|yes)$/i.test(row.locked)
+    const item: DailyPlanItem = {
+      id: createId('dpi'),
+      time: row.time,
+      label: row.slot,
+      kind: normalizeKind(row.kind),
+      foodName: row.name,
+      amount: row.amount,
+      unit: row.unit,
+      note: row.note,
+      locked,
+      foodId: null,
+      supplementId: null
+    }
+    template.items.push(item)
+  }
+  return [...groups.values()]
 }
 
 function mappedValue(row: Record<string, unknown>, mapping: Record<string, string>, target: string): unknown {
@@ -67,16 +173,23 @@ export function ImportDataView() {
 
   const mappingFields = type === 'food'
     ? foodImportFields.map((field) => ({ id: field.id, label: field.label, required: Boolean(field.required) }))
-    : requiredColumns[type].map((column) => ({ id: column, label: column, required: true }))
+    : type === 'dailyPlan'
+      ? DAILY_PLAN_FIELDS.map((field) => ({ id: field.id, label: field.label, required: field.required }))
+      : requiredColumns[type].map((column) => ({ id: column, label: column, required: true }))
   const missingFields = type === 'food'
     ? missingFoodImportFields(mapping as Partial<Record<FoodImportTarget, string>>)
-    : requiredColumns[type].filter((column) => !mapping[column])
+    : type === 'dailyPlan'
+      ? DAILY_PLAN_FIELDS.filter((field) => field.required && !mapping[field.id]).map((field) => field.label)
+      : requiredColumns[type].filter((column) => !mapping[column])
 
   const onFile = async (file?: File) => {
     if (!file) return
     const parsed = await parseSpreadsheet(file)
     setPreview(parsed)
     if (type === 'food') setMapping(autoMapFoodColumns(parsed.headers))
+    else if (type === 'dailyPlan') {
+      setMapping(autoMapDailyPlanColumns(parsed.headers))
+    }
     else {
       setMapping(Object.fromEntries(requiredColumns[type].map((column) => {
         const normalized = normalizeImportHeader(column)
@@ -160,11 +273,41 @@ export function ImportDataView() {
           const items: BodyLog[] = rows.map((row) => ({ id: createId('body'), date: normalizeDate(row['日期']), weightKg: numberValue(row['体重']), waistCm: numberValue(row['腰围']), sleepHours: numberValue(row['睡眠']), steps: numberValue(row['步数']), cyclingMinutes: numberValue(row['骑行分钟']) || 0, energy: numberValue(row['精力']), backDiscomfort: numberValue(row['腰背不适']) || 0, numbnessEvents: numberValue(row['麻木事件']) || 0, trainingVolume: numberValue(row['训练总量']) || 0, dietAdherence: numberValue(row['饮食完成率']) || 0 }))
           validateNumbers(items.flatMap((item) => [item.weightKg, item.waistCm, item.sleepHours, item.steps, item.energy]))
           setDashboardState((current) => ({ ...current, bodyLogs: mergeByDate(current.bodyLogs, items, duplicateMode) }))
-        } else {
+        } else if (type === 'training') {
           const items: WorkoutSession[] = rows.map((row) => ({ id: createId('session'), date: normalizeDate(row['日期']), split: textValue(row['训练日']) as WorkoutSession['split'], sleepHours: numberValue(row['睡眠']), energy: numberValue(row['精力']), nextDayWorse: ['是', 'true', '1'].includes(textValue(row['次日加重']).toLowerCase()), logs: [] }))
           if (items.some((item) => !['推', '拉', '腿'].includes(item.split))) throw new Error('训练日只能填写推、拉、腿。')
           validateNumbers(items.flatMap((item) => [item.sleepHours, item.energy]))
           setDashboardState((current) => ({ ...current, sessions: [...current.sessions, ...items] }))
+        } else {
+          const planRows = preview.rows.map((row) => mapDailyPlanRow(row, mapping))
+          if (planRows.some((row) => !row.planName || !row.name)) throw new Error('计划名称或项目名称不能为空。')
+          const incoming = groupDailyPlanRows(planRows)
+          if (!incoming.length) throw new Error('未能识别任何日计划行，请检查列名。')
+          setDashboardState((current) => {
+            const currentPlans = current.dailyPlans ?? []
+            const next: DailyPlanTemplate[] = [...currentPlans]
+            for (const plan of incoming) {
+              const key = (entry: DailyPlanTemplate) => `${entry.name.trim().toLowerCase()}|${entry.dayType}`
+              const index = next.findIndex((entry) => key(entry) === key(plan))
+              if (index < 0) { next.push(plan); continue }
+              if (duplicateMode === 'skip') continue
+              if (duplicateMode === 'replace') next[index] = { ...plan, id: next[index].id, active: next[index].active, updatedAt: new Date().toISOString() }
+              else {
+                const existing = next[index]
+                const byLabelTime = new Map<string, DailyPlanItem>()
+                for (const it of existing.items) byLabelTime.set(`${it.time}|${it.label}|${it.foodName.toLowerCase()}`, it)
+                const mergedItems: DailyPlanItem[] = [...existing.items]
+                for (const it of plan.items) {
+                  const key2 = `${it.time}|${it.label}|${it.foodName.toLowerCase()}`
+                  const idx = mergedItems.findIndex((e) => `${e.time}|${e.label}|${e.foodName.toLowerCase()}` === key2)
+                  if (idx >= 0) mergedItems[idx] = { ...mergedItems[idx], ...it, id: mergedItems[idx].id }
+                  else mergedItems.push(it)
+                }
+                next[index] = { ...existing, items: mergedItems, source: plan.source, updatedAt: new Date().toISOString() }
+              }
+            }
+            return { ...current, dailyPlans: next, lastUpdatedAt: new Date().toISOString() }
+          })
         }
       }
       setStatus(`已自动导入${preview.rows.length}条数据；重复项处理：${({ skip: '跳过', replace: '覆盖', merge: '合并' })[duplicateMode]}。`)
@@ -178,7 +321,12 @@ export function ImportDataView() {
     食物: [{ 食材: '白煮蛋', '能量(kJ)': 314, '热量(kcal)': 75, '蛋白质(g)': 6.5, '脂肪(g)': 5.2, '碳水(g)': 0.6, '膳食纤维(g)': 0, '钠(mg)': 62, '钾(mg)': 63, 来源: '包装或可靠来源' }],
     食谱: [{ 名称: '示例餐', 餐别: '晚餐', 食材: '食材和份量', 每份说明: '1份', 热量: 600, 蛋白质: 40, 脂肪: 20, 碳水: 60, 价格: '中', 来源: '手动录入' }],
     身体记录: [{ 日期: '2026-07-21', 体重: 70, 腰围: 80, 睡眠: 7, 步数: 5000, 骑行分钟: 40, 精力: 6, 腰背不适: 5, 麻木事件: 0, 训练总量: 0, 饮食完成率: 80 }],
-    训练记录: [{ 日期: '2026-07-21', 训练日: '推', 睡眠: 7, 精力: 6, 次日加重: '否' }]
+    训练记录: [{ 日期: '2026-07-21', 训练日: '推', 睡眠: 7, 精力: 6, 次日加重: '否' }],
+    日计划模板: [
+      { 计划名称: '谭成义·训练日', 类型: '训练日', 时段标签: '全天', 时间: '07:00', 类别: '全天', 名称: '动物黄油', 份量: 5, 单位: 'g', 备注: '烹饪或直接食用', 锁定: '是' },
+      { 计划名称: '谭成义·训练日', 类型: '训练日', 时段标签: '早餐', 时间: '08:00', 类别: '饮食', 名称: '燕麦', 份量: 70, 单位: 'g', 备注: '生重', 锁定: '否' },
+      { 计划名称: '谭成义·休息日', 类型: '休息日', 时段标签: '练前', 时间: '15:10', 类别: '饮食', 名称: '柚子', 份量: 200, 单位: 'g', 备注: '训练前 20 分钟', 锁定: '否' }
+    ]
   })
 
   const exportExcel = () => downloadWorkbook('训练饮食看板数据.xlsx', {

@@ -1,9 +1,10 @@
-import { useMemo, useState } from 'react'
-import { Bell, Check, ChevronDown, Clock3, Edit3, Plus, Save, X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import { Bell, Check, ChevronDown, Dices, Edit3, ListChecks, Plus, Save, Shuffle, Sun, X } from 'lucide-react'
 import { useAppState } from '../state/AppContext'
-import type { ScheduleItem } from '../types'
+import type { DailyPlanItemKind, ScheduleItem } from '../types'
 import { createId } from '../lib/ids'
 import { getPlanForDate, isExerciseEnabled } from '../lib/trainingPlans'
+import { buildScheduleRow, dailyPlanCategoryClass, getActivePlan, groupItemsBySlot, materializeItems } from '../lib/dailyPlan'
 
 const categoryClass: Record<ScheduleItem['category'], string> = {
   生活: 'category-life', 工作: 'category-work', 饮食: 'category-food', 训练: 'category-training', 睡眠: 'category-sleep', 补剂: 'category-supplement'
@@ -17,10 +18,35 @@ export function TimelineView() {
   const { state, setState } = useAppState()
   const [editing, setEditing] = useState<string | 'new' | null>(null)
   const [draft, setDraft] = useState<Omit<ScheduleItem, 'id'>>(emptyItem)
+  const [randomSeed, setRandomSeed] = useState(0)
   const sorted = useMemo(() => [...state.schedule].sort((a, b) => a.time.localeCompare(b.time)), [state.schedule])
   const todayPlan = getPlanForDate(state.planDays, state.trainingFrequency, state.trainingCycleStartedAt, new Date(), state.trainingCycleAnchor)
   const currentSplit = todayPlan.plan
   const currentExercises = currentSplit?.exercises.filter(isExerciseEnabled) ?? []
+
+  const dayType: 'training' | 'rest' = todayPlan.isRestDay ? 'rest' : 'training'
+  const activePlan = getActivePlan(state, dayType)
+  const mode = state.dailyPlanMode ?? 'fixed'
+  const planItems = useMemo(() => activePlan ? materializeItems(activePlan, mode, randomSeed) : [], [activePlan, mode, randomSeed])
+  const grouped = useMemo(() => groupItemsBySlot(planItems), [planItems])
+  const dailyRows = useMemo(() => planItems.map((entry) => buildScheduleRow(entry, dayType)), [planItems, dayType])
+  const [dailyDone, setDailyDone] = useState<Record<string, boolean>>(() => {
+    const map: Record<string, boolean> = {}
+    if (typeof window === 'undefined') return map
+    for (const row of dailyRows) {
+      if (window.localStorage.getItem(`dailyplan-completed-${row.id}`) === '1') map[row.id] = true
+    }
+    return map
+  })
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const map: Record<string, boolean> = {}
+    for (const row of dailyRows) {
+      if (window.localStorage.getItem(`dailyplan-completed-${row.id}`) === '1') map[row.id] = true
+    }
+    setDailyDone(map)
+  }, [dailyRows])
+  useEffect(() => { setRandomSeed(0) }, [mode, dayType])
 
   const startEdit = (item: ScheduleItem) => {
     const { id: _id, ...rest } = item
@@ -45,6 +71,21 @@ export function TimelineView() {
     schedule: current.schedule.map((item) => item.id === id ? { ...item, completed: !item.completed } : item)
   }))
 
+  const toggleDailyDone = (rowId: string) => {
+    if (typeof window === 'undefined') return
+    const key = `dailyplan-completed-${rowId}`
+    const next = window.localStorage.getItem(key) === '1' ? null : '1'
+    if (next) window.localStorage.setItem(key, '1')
+    else window.localStorage.removeItem(key)
+    setDailyDone((current) => ({ ...current, [rowId]: next === '1' }))
+  }
+
+  const switchMode = (next: 'fixed' | 'random') => {
+    setState((current) => ({ ...current, dailyPlanMode: next, lastUpdatedAt: new Date().toISOString() }))
+  }
+
+  const reshuffle = () => setRandomSeed((seed) => seed + 1)
+
   return (
     <div className="view-stack">
       <section className="summary-strip" aria-label="今日摘要">
@@ -52,6 +93,72 @@ export function TimelineView() {
         <div><span>已完成</span><strong>{sorted.filter((item) => item.completed).length}/{sorted.length}</strong></div>
         <div><span>睡眠目标</span><strong>8小时+</strong></div>
         <button className="button primary" onClick={() => { setDraft(emptyItem); setEditing('new') }}><Plus size={16} />添加安排</button>
+      </section>
+
+      <section className="timeline-section daily-plan-section">
+        <div className="section-heading">
+          <div>
+            <h2>{dayType === 'rest' ? '今日日计划·休息日' : '今日日计划·训练日'}</h2>
+            <p>{activePlan ? `当前模板：${activePlan.name}${activePlan.source ? `（${activePlan.source}）` : ''}。` : '当前还没有日计划模板，请到「计划」页创建或导入。'}</p>
+          </div>
+          {activePlan && (
+            <div className="daily-plan-tools">
+              <div className="mode-switch" role="group" aria-label="菜单模式">
+                <button className={mode === 'fixed' ? 'mode-pill is-active' : 'mode-pill'} onClick={() => switchMode('fixed')} aria-pressed={mode === 'fixed'}>
+                  <ListChecks size={14} />固定菜单
+                </button>
+                <button className={mode === 'random' ? 'mode-pill is-active' : 'mode-pill'} onClick={() => switchMode('random')} aria-pressed={mode === 'random'}>
+                  <Shuffle size={14} />随机菜单
+                </button>
+              </div>
+              {mode === 'random' && (
+                <button className="button" onClick={reshuffle} aria-label="换一组随机"><Dices size={16} />换一组</button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {!activePlan ? (
+          <p className="empty-inline">尚未配置日计划模板。打开「计划」页面，导入或新建一个训练日 / 休息日模板即可。</p>
+        ) : (
+          <div className="daily-plan-timeline">
+            {grouped.map((group) => (
+              <div className="daily-plan-slot" key={group.slot}>
+                <div className="daily-plan-slot-head">
+                  <Sun size={14} aria-hidden="true" />
+                  <strong>{group.slot}</strong>
+                  <span>{group.rows[0]?.item.time && group.rows[0]?.item.time !== '00:00' ? group.rows[0].item.time : ''}</span>
+                </div>
+                <ul>
+                  {group.rows.map((row) => {
+                    const planRow = buildScheduleRow(row, dayType)
+                    const done = dailyDone[planRow.id] === true
+                    const kind: DailyPlanItemKind = row.item.kind
+                    return (
+                      <li key={planRow.id} className={done ? 'is-completed' : ''}>
+                        <span className={`timeline-marker ${dailyPlanCategoryClass[kind]}`} aria-hidden="true" />
+                        <div className="daily-plan-row-body">
+                          <div className="daily-plan-row-main">
+                            <strong>{row.displayName}</strong>
+                            <span>{row.item.amount}{row.item.unit}{row.item.kind === '全天' ? ' · 全天总量' : ''}</span>
+                            {row.isRandomized && <em className="random-tag">随机</em>}
+                          </div>
+                          {row.item.note && <p className="timeline-notes">{row.item.note}</p>}
+                        </div>
+                        <button className={done ? 'icon-button is-done' : 'icon-button'} aria-label={done ? `已完成${row.displayName}` : `标记${row.displayName}完成`} onClick={() => toggleDailyDone(planRow.id)}>
+                          <Check size={16} />
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>
+            ))}
+            {dailyRows.length > 0 && (
+              <p className="daily-plan-summary">已完成 {Object.values(dailyDone).filter(Boolean).length} / {dailyRows.length} 项。{mode === 'random' ? '当前是随机组合，可点「换一组」再抽一次。' : '当前是固定菜单，切到「随机菜单」可抽变化。'}</p>
+            )}
+          </div>
+        )}
       </section>
 
       <section className="timeline-section">
