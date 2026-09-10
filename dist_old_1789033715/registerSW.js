@@ -1,1 +1,0 @@
-if('serviceWorker' in navigator) {window.addEventListener('load', () => {navigator.serviceWorker.register('/nutri-agent/sw.js', { scope: '/nutri-agent/' })})}
