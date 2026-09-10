@@ -10,7 +10,7 @@ function movingAverage(values: BodyLog[], index: number): number {
   return Number((slice.reduce((sum, item) => sum + item.weightKg, 0) / slice.length).toFixed(2))
 }
 
-const emptyBodyLog: Omit<BodyLog, 'id'> = { date: new Date().toISOString().slice(0,10), weightKg: 107, waistCm: 110, sleepHours: 7, steps: 5000, cyclingMinutes: 40, energy: 5, backDiscomfort: 5, numbnessEvents: 0, trainingVolume: 0, dietAdherence: 80 }
+const emptyBodyLog: Omit<BodyLog, 'id'> = { date: new Date().toISOString().slice(0,10), weightKg: 0, waistCm: 0, sleepHours: 7, steps: 5000, cyclingMinutes: 40, energy: 5, backDiscomfort: 5, numbnessEvents: 0, trainingVolume: 0, dietAdherence: 80 }
 
 export function ProgressView() {
   const { state, setState } = useAppState()

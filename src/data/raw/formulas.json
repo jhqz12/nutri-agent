@@ -19,8 +19,8 @@
     "requiresBodyFat": false,
     "sourceName": "用户确认宏量规则；能量参照 Academy Evidence Analysis Library",
     "sourceUrl": "https://www.andeal.org/template.cfm?template=guide_summary&key=4341",
-    "applicablePopulation": "当前108kg、中低活动强度的减脂阶段",
-    "limitations": "宏量系数是个人执行规则，不是高血压或胰岛素抵抗治疗公式；需结合趋势复核",
+    "applicablePopulation": "中低活动强度的减脂阶段人群",
+    "limitations": "宏量系数是个人执行规则，不是任何疾病的治疗公式；需结合趋势复核",
     "reviewStatus": "个人规则已确认；能量参照来源已核对",
     "version": "v2.0"
   },

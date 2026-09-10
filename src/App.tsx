@@ -10,6 +10,7 @@ import { NutritionView } from './views/NutritionView'
 import { ProgressView } from './views/ProgressView'
 import { DataView } from './views/DataView'
 import { SettingsView } from './views/SettingsView'
+import { Onboarding } from './views/Onboarding'
 
 const navigation: Array<{ id: TabId; label: string; icon: LucideIcon }> = [
   { id: 'today', label: '今日', icon: CalendarDays },
@@ -53,7 +54,16 @@ export function App() {
   const [theme, setTheme] = useState<ThemeId>(readSavedTheme)
   const [themeOpen, setThemeOpen] = useState(false)
   const shellRef = useRef<HTMLDivElement>(null)
-  const { syncStatus } = useAppState()
+  const { state, syncStatus } = useAppState()
+  const [onboardingDone, setOnboardingDone] = useState<boolean>(() => {
+    try { return window.localStorage.getItem('hengdong-onboarding-done') === '1' } catch { return false }
+  })
+  const profileEmpty = state.profile.age <= 0 || state.profile.heightCm <= 0 || state.profile.weightKg <= 0
+  const showOnboarding = !onboardingDone && profileEmpty
+  const finishOnboarding = () => {
+    try { window.localStorage.setItem('hengdong-onboarding-done', '1') } catch { /* 忽略存储失败 */ }
+    setOnboardingDone(true)
+  }
   const heading = pageTitles[tab]
   const activeTheme = themes.find((item) => item.id === theme) ?? themes[0]
 
@@ -128,6 +138,8 @@ export function App() {
           </button>
         ))}
       </nav>
+
+      {showOnboarding && <Onboarding onFinish={finishOnboarding} />}
     </div>
   )
 }

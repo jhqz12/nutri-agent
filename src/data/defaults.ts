@@ -1,11 +1,5 @@
 import type { AppState, BodyLog, Exercise, FoodItem, Recipe, ScheduleItem } from '../types'
 
-const dateFromToday = (daysAgo: number) => {
-  const date = new Date()
-  date.setDate(date.getDate() - daysAgo)
-  return date.toISOString().slice(0, 10)
-}
-
 export const defaultSchedule: ScheduleItem[] = [
   { id: 'schedule-wake', title: '起床、温水与补剂', time: '08:30', durationMinutes: 20, category: '补剂', reminderMinutes: 0, notes: '补剂只按已确认剂量记录，不临时加量。', completed: false },
   { id: 'schedule-work', title: '开始工作', time: '09:00', durationMinutes: 180, category: '工作', reminderMinutes: 5, notes: '每60分钟起身活动2至3分钟。', completed: false },
@@ -127,7 +121,7 @@ export const defaultPushExercises: Exercise[] = [
     id: 'push-dip', name: '双杠臂屈伸', targetArea: '下胸（当前暂停）',
     sets: 2, minReps: 6, maxReps: 10, targetRir: 5, restSeconds: 150, enabled: false,
     steps: '只有在完全无手麻时才从辅助双杠开始；肩膀不耸、肘部不出现电击感，下降到肩前无压力的位置。',
-    commonErrors: '直接用107公斤自重硬撑、下降过深、推起时肘麻、锁定时耸肩。',
+    commonErrors: '直接用自重硬撑、下降过深、推起时肘麻、锁定时耸肩。',
     alternative: '辅助双杠、高位俯卧撑或绳索下压。',
     stopCriteria: '左肘跳麻筋、无名指或小拇指麻木、握力下降时立即停止，当前不建议启用。'
   }),
@@ -417,24 +411,8 @@ export const defaultLegExercises: Exercise[] = [
   }
 ]
 
-const defaultBodyLogs: BodyLog[] = Array.from({ length: 14 }, (_, index) => {
-  const daysAgo = 13 - index
-  const weight = 107.1 - index * 0.07 + Math.sin(index) * 0.18
-  return {
-    id: `body-${index}`,
-    date: dateFromToday(daysAgo),
-    weightKg: Number(weight.toFixed(1)),
-    waistCm: Number((110 - index * 0.04).toFixed(1)),
-    sleepHours: Number((6.8 + (index % 4) * 0.25).toFixed(1)),
-    steps: 4200 + (index % 5) * 500,
-    cyclingMinutes: index % 3 === 0 ? 40 : 20,
-    energy: 5 + (index % 3),
-    backDiscomfort: Math.max(2, 6 - Math.floor(index / 4)),
-    numbnessEvents: index % 6 === 0 ? 1 : 0,
-    trainingVolume: index % 2 === 0 ? 4200 + index * 70 : 0,
-    dietAdherence: 70 + (index % 4) * 7
-  }
-})
+// 首次使用不预置任何身体记录，由用户在「趋势」页自行添加，避免默认暴露真实身体数据。
+const defaultBodyLogs: BodyLog[] = []
 
 export const defaultState: AppState = {
   dataVersion: 7,
@@ -447,9 +425,9 @@ export const defaultState: AppState = {
     isRestDay: false
   },
   profile: {
-    name: '我的计划', sex: 'male', age: 27, heightCm: 176, weightKg: 108, bodyFatPercent: null, targetWeightKg: 80,
-    activityFactor: 1.55, trainingCalories: 2646, restCalories: 2430, proteinGrams: 172.8,
-    trainingFatGrams: 97.2, restFatGrams: 97.2
+    name: '我的计划', sex: 'male', age: 0, heightCm: 0, weightKg: 0, bodyFatPercent: null, targetWeightKg: 0,
+    activityFactor: 1.55, trainingCalories: 0, restCalories: 0, proteinGrams: 0,
+    trainingFatGrams: 0, restFatGrams: 0
   },
   schedule: defaultSchedule,
   planDays: [

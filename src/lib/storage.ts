@@ -52,14 +52,14 @@ export function migrateState(savedState: Partial<AppState>): AppState {
   if (savedVersion < 5) {
     mergedState.profile = {
       ...mergedState.profile,
-      weightKg: 108,
+      weightKg: 0,
       bodyFatPercent: mergedState.profile.bodyFatPercent ?? null,
       activityFactor: 1.55,
-      trainingCalories: 2646,
-      restCalories: 2430,
-      proteinGrams: 172.8,
-      trainingFatGrams: 97.2,
-      restFatGrams: 97.2
+      trainingCalories: 0,
+      restCalories: 0,
+      proteinGrams: 0,
+      trainingFatGrams: 0,
+      restFatGrams: 0
     }
   }
   if (savedVersion < 6) {

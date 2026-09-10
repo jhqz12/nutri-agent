@@ -6,11 +6,20 @@ import { calculateMealCalories } from './mealEnergy'
 import { createMenuIdea } from './mealPlanner'
 import { defaultState } from './nutritionStorage'
 
+// 27岁基准档案：公式验算专用，与实际默认值（中性空档案）分离，避免测试依赖真实身体数据。
+const BASELINE_PROFILE = { age: 27, heightCm: 176, weightKg: 108 }
+
+function baselineState() {
+  const state = structuredClone(defaultState)
+  state.profile = { ...state.profile, ...BASELINE_PROFILE }
+  return state
+}
+
 describe('27岁基准验算', () => {
   it('输出确认后的硬基准', () => {
     const formula = rawLibraries.formulas[0]
-    const training = calculateMacro({ ...structuredClone(defaultState), manual: { ...defaultState.manual, dayType: '推' } }, formula, new Date('2026-08-02'))
-    const rest = calculateMacro({ ...structuredClone(defaultState), manual: { ...defaultState.manual, dayType: '休' } }, formula, new Date('2026-08-02'))
+    const training = calculateMacro({ ...baselineState(), manual: { ...baselineState().manual, dayType: '推' } }, formula, new Date('2026-08-02'))
+    const rest = calculateMacro({ ...baselineState(), manual: { ...baselineState().manual, dayType: '休' } }, formula, new Date('2026-08-02'))
 
     expect(training).toMatchObject({ bmr: 2050, tdee: 3178, targetCalories: 2646, protein: 172.8, fat: 97.2, carbs: 270 })
     expect(rest).toMatchObject({ bmr: 2050, tdee: 3178, targetCalories: 2430, protein: 172.8, fat: 97.2, carbs: 216 })
@@ -18,7 +27,7 @@ describe('27岁基准验算', () => {
 
   it('手动热量低于BMR时自动锁定为BMR', () => {
     const formula = rawLibraries.formulas[0]
-    const state = { ...structuredClone(defaultState), manual: { ...defaultState.manual, dayType: '推' as const, targetCalories: 1200 } }
+    const state = { ...baselineState(), manual: { ...baselineState().manual, dayType: '推' as const, targetCalories: 1200 } }
     expect(calculateMacro(state, formula).targetCalories).toBe(2050)
   })
 })
@@ -26,7 +35,7 @@ describe('27岁基准验算', () => {
 describe('专业公式边界', () => {
   it('修订Harris-Benedict可以作为对照公式计算', () => {
     const formula = rawLibraries.formulas.find((item) => item.id === 'FORMULA_03')!
-    const result = calculateMacro(structuredClone(defaultState), formula)
+    const result = calculateMacro(baselineState(), formula)
 
     expect(result.energyEquation).toBe('revisedHarrisBenedict')
     expect(result.bmr).toBeGreaterThan(0)
@@ -36,12 +45,12 @@ describe('专业公式边界', () => {
   it('Cunningham缺少体脂率时不可启用', () => {
     const formula = rawLibraries.formulas.find((item) => item.id === 'FORMULA_04')!
 
-    expect(isFormulaAvailable(defaultState, formula)).toBe(false)
+    expect(isFormulaAvailable(baselineState(), formula)).toBe(false)
   })
 
   it('Cunningham填写可靠体脂率后可以计算', () => {
     const formula = rawLibraries.formulas.find((item) => item.id === 'FORMULA_04')!
-    const state = structuredClone(defaultState)
+    const state = baselineState()
     state.profile.bodyFatPercent = 30
     const result = calculateMacro(state, formula)
 
@@ -53,14 +62,14 @@ describe('专业公式边界', () => {
 
 describe('补剂冲突', () => {
   it('葫芦巴2粒时锁死锌镁硼硒片', () => {
-    const result = calculateEngine(structuredClone(defaultState))
+    const result = calculateEngine(baselineState())
     expect(result.supplementLocks.S16).toContain('锌40mg')
   })
 })
 
 describe('微量元素上限口径', () => {
   it('食物镁超过350mg不会误判为补剂超量', () => {
-    const magnesium = calculateEngine(structuredClone(defaultState)).ledger.find((row) => row.id === 'magnesium')
+    const magnesium = calculateEngine(baselineState()).ledger.find((row) => row.id === 'magnesium')
     expect(magnesium?.food).toBeGreaterThan(350)
     expect(magnesium?.status).not.toBe('超量')
   })
@@ -68,7 +77,7 @@ describe('微量元素上限口径', () => {
 
 describe('用户扩展食材库', () => {
   it('用户新增食材会进入有效库并参与食补候选计算', () => {
-    const state = structuredClone(defaultState)
+    const state = baselineState()
     const source = rawLibraries.foods[0]
     state.customFoods = [{
       ...source,
@@ -88,7 +97,7 @@ describe('用户扩展食材库', () => {
 
 describe('随机菜单克重平衡', () => {
   it('只调整已选食材，并把三餐与全天热量拉回可执行范围', () => {
-    const state = structuredClone(defaultState)
+    const state = baselineState()
     state.manual.dayType = '推'
     const foods = getEffectiveLibrariesForState(state).foods
     const macro = calculateMacro(state, rawLibraries.formulas[0], new Date('2026-08-04'))
@@ -129,7 +138,7 @@ describe('随机菜单克重平衡', () => {
 
 describe('14天趋势管线', () => {
   it('完整窗口无变化时提示减少碳水', () => {
-    const state = structuredClone(defaultState)
+    const state = baselineState()
     state.bodyLogs = [
       { ...state.bodyLogs[0], id: 'start', date: '2026-08-01', weightKg: 108 },
       { ...state.bodyLogs[0], id: 'end', date: '2026-08-15', weightKg: 108 }

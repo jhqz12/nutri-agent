@@ -26,12 +26,27 @@ export default defineConfig(({ mode }) => {
           ]
         },
         workbox: {
-          navigateFallback: `${base}index.html`,
-          globPatterns: ['**/*.{js,css,html,svg}'],
+          // 不缓存 index.html（globPatterns 去掉 html），导航请求走「网络优先」，
+          // 这样每次发布后打开就是最新版，网络失败时才回退到缓存。
+          // navigateFallback 显式设为 false，禁用默认的「缓存优先」导航路由，
+          // 否则它会抢在下面的 NetworkFirst 之前命中导航请求。
+          navigateFallback: null,
+          globPatterns: ['**/*.{js,css,svg}'],
           importScripts: [`${base}push-sw.js`],
           cleanupOutdatedCaches: true,
           clientsClaim: true,
-          skipWaiting: true
+          skipWaiting: true,
+          runtimeCaching: [
+            {
+              urlPattern: ({ request }) => request.mode === 'navigate',
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'pages',
+                networkTimeoutSeconds: 3,
+                expiration: { maxEntries: 5, maxAgeSeconds: 86400 }
+              }
+            }
+          ]
         }
       })
     ],

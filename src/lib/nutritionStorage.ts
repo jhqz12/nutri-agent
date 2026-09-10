@@ -44,15 +44,15 @@ const defaultSupplements: SupplementDose[] = [
 ]
 
 const firstBodyLog: BodyLog = {
-  id: crypto.randomUUID(), date: today, weightKg: 108, waistCm: 110,
+  id: crypto.randomUUID(), date: today, weightKg: 0, waistCm: 0,
   systolic: null, diastolic: null, trainingIntensity: 5, calorieAdherence: 0
 }
 
 export const defaultState: AppState = {
   dataVersion: CURRENT_DATA_VERSION,
   profile: {
-    sex: '男', age: 27, heightCm: 176, weightKg: 108, bodyFatPercent: null, sodiumLimitMg: 2000,
-    healthFlags: ['高血压', '胰岛素抵抗'], trainingPattern: '练3休1', cycleStartDate: today
+    sex: '男', age: 0, heightCm: 0, weightKg: 0, bodyFatPercent: null, sodiumLimitMg: 2000,
+    healthFlags: [], trainingPattern: '练3休1', cycleStartDate: today
   },
   manual: { dayType: null, targetCalories: null, formulaId: 'TAN_M_02', trainingIntensity: 5 },
   overrides: [],
@@ -80,7 +80,7 @@ export function createInitialState(): AppState {
 export function migrateNutritionState(parsed: Partial<AppState>): AppState {
     const savedVersion = typeof parsed.dataVersion === 'number' ? parsed.dataVersion : 1
     const profile = { ...defaultState.profile, ...parsed.profile }
-    if (savedVersion < 2) profile.weightKg = 108
+    if (savedVersion < 2) profile.weightKg = 0
     const customFoods = Array.isArray(parsed.customFoods) ? parsed.customFoods.map(normalizeCustomFood) : []
     const foods = [...rawLibraries.foods, ...customFoods]
     const savedMenu = Array.isArray(parsed.menu) ? parsed.menu : defaultMenu

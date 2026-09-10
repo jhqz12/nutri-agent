@@ -70,7 +70,7 @@ export function FormulaLibraryView() {
 
   const inspectFormula = (text: string) => {
     setImportText(text)
-    try { setPreview(parseFormula(text)); setMessage('模板校验通过，请核对108kg预览后确认导入。') }
+    try { setPreview(parseFormula(text)); setMessage('模板校验通过，请核对预览后确认导入。') }
     catch (error) { setPreview(null); setMessage(error instanceof Error ? error.message : '公式识别失败。') }
   }
 
@@ -84,7 +84,7 @@ export function FormulaLibraryView() {
   }
 
   return <section className="formula-library-panel">
-    <div className="section-heading"><div><h2>公式库与导入</h2><p>原始公式只读；导入前用当前108kg档案预览总热量、蛋白质、脂肪和碳水。</p></div><button className="button" onClick={() => downloadJson('营养公式导入模板.json', formulaTemplate)}><Download size={16} />下载公式模板</button></div>
+    <div className="section-heading"><div><h2>公式库与导入</h2><p>原始公式只读；导入前用当前档案预览总热量、蛋白质、脂肪和碳水。</p></div><button className="button" onClick={() => downloadJson('营养公式导入模板.json', formulaTemplate)}><Download size={16} />下载公式模板</button></div>
     <div className="formula-card-list">{libraries.formulas.map((formula) => {
       const training = previewFormula(state, formula, false)
       const rest = previewFormula(state, formula, true)

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Bell, Bot, Calculator, CheckCircle2, Cloud, Eye, EyeOff, KeyRound, RotateCcw, Save, ShieldCheck, Wifi } from 'lucide-react'
+import { Bell, Bot, Calculator, CheckCircle2, Cloud, Eye, EyeOff, Github, KeyRound, RotateCcw, Save, ShieldCheck, Wifi } from 'lucide-react'
 import { useAppState } from '../state/AppContext'
 import { useNutritionState } from '../state/NutritionContext'
 import { calculateEngine, getEffectiveLibrariesForState, isFormulaAvailable } from '../lib/engine'
@@ -317,5 +317,9 @@ export function SettingsView() {
     </div>
     {message && <div className="notice"><ShieldCheck size={18} />{message}</div>}
     <section className="danger-zone"><div><h2>恢复初始数据</h2><p>会清空本机现有训练、日程和记录；原始六库不会被修改。</p></div><button className="button danger" onClick={() => { if (window.confirm('确定清空当前本机数据吗？')) restoreDefaults() }}><RotateCcw size={16} />恢复初始数据</button></section>
+    <section className="about-section">
+      <div className="section-heading"><div><h2>关于衡动</h2><p>个人训练、饮食与恢复看板。</p></div><Github size={18} /></div>
+      <div className="about-body"><p>由 <strong>jhqz12</strong> 独立开发维护。数据只保存在你自己的浏览器里，不会上传到任何服务器。</p><a href="https://github.com/jhqz12/nutri-agent" target="_blank" rel="noopener noreferrer">github.com/jhqz12/nutri-agent</a></div>
+    </section>
   </div>
 }

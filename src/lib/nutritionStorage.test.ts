@@ -9,11 +9,11 @@ describe('恢复初始数据', () => {
     const first = createInitialState()
     const second = createInitialState()
 
-    expect(first.profile).toMatchObject({ age: 27, heightCm: 176, weightKg: 108, bodyFatPercent: null })
+    expect(first.profile).toMatchObject({ age: 0, heightCm: 0, weightKg: 0, bodyFatPercent: null })
     expect(first.overrides).toEqual([])
     expect(first.customFormulas).toEqual([])
     expect(first.bodyLogs).toHaveLength(1)
-    expect(first.bodyLogs[0].weightKg).toBe(108)
+    expect(first.bodyLogs[0].weightKg).toBe(0)
     expect(second.bodyLogs[0].id).not.toBe(first.bodyLogs[0].id)
   })
 

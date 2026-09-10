@@ -112,7 +112,7 @@ export function AdminView({ state, setState, result, profileReadOnly = false }: 
     const confirmed = window.confirm('确定恢复初始本地数据吗？这会清空当前浏览器中的档案修改、覆盖历史、菜单和趋势记录，但不会改动六库原始值。')
     if (!confirmed) return
     setState(createInitialState())
-    setMessage('已恢复初始本地数据：27岁、176cm、108kg，覆盖记录已清空。')
+    setMessage('已恢复初始本地数据，覆盖记录已清空。')
   }
 
   const history = [...state.overrides].reverse()
