@@ -29,7 +29,7 @@ describe('训练数据升级', () => {
     const migrated = migrateState(legacyState)
     const exercises = migrated.planDays.find((day) => day.name === '腿')!.exercises
 
-    expect(migrated.dataVersion).toBe(11)
+    expect(migrated.dataVersion).toBe(12)
     expect(migrated.trainingCycleAnchor).toEqual({
       date: migrated.trainingCycleStartedAt,
       planId: migrated.planDays[0]?.id ?? null,
@@ -70,8 +70,30 @@ describe('训练数据升级', () => {
 
     const migrated = migrateState(previousState)
 
-    expect(migrated.dataVersion).toBe(11)
+    expect(migrated.dataVersion).toBe(12)
     expect(migrated.coachMessages).toEqual([])
     expect(migrated.sessions[0]?.id).toBe('session-existing')
+  })
+
+  it('把第十一版数据升级为带训练时长与身体反馈的第十二版', () => {
+    const previousState = structuredClone(defaultState)
+    previousState.dataVersion = 11
+    previousState.sessions = [{
+      id: 'session-legacy', date: '2026-09-01', split: '推', sleepHours: 7,
+      energy: 6, nextDayWorse: false, logs: []
+    }]
+    previousState.bodyLogs = [{
+      id: 'body-legacy', date: '2026-09-01', weightKg: 80, waistCm: 90, sleepHours: 7,
+      steps: 5000, cyclingMinutes: 0, energy: 6, backDiscomfort: 2, numbnessEvents: 0,
+      trainingVolume: 0, dietAdherence: 80
+    }]
+
+    const migrated = migrateState(previousState)
+
+    expect(migrated.sessions[0].durationMinutes).toBe(0)
+    expect(migrated.sessions[0].feedbackTags).toEqual([])
+    expect(migrated.bodyLogs[0].appetiteStability).toBe(3)
+    expect(migrated.bodyLogs[0].cheatMeal).toBe(false)
+    expect(migrated.bodyLogs[0].fastingPhotoId).toBeNull()
   })
 })

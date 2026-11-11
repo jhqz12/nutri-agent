@@ -513,7 +513,7 @@ export const defaultLegExercises: Exercise[] = [
 const defaultBodyLogs: BodyLog[] = []
 
 export const defaultState: AppState = {
-  dataVersion: 7,
+  dataVersion: 12,
   trainingTemplate: '三分化',
   trainingFrequency: '连续循环',
   trainingCycleStartedAt: new Date().toISOString().slice(0, 10),

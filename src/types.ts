@@ -90,7 +90,14 @@ export interface WorkoutSession {
   energy: number
   nextDayWorse: boolean
   logs: WorkoutSetLog[]
+  // 本次训练总时长（分钟）。0 表示没记录，统计时不计入平均。
+  durationMinutes?: number
+  // 身体反馈：结构化标签 + 一句自由备注，便于统计高频问题。
+  feedbackTags?: BodyFeedbackTag[]
+  feedbackNote?: string
 }
+
+export type BodyFeedbackTag = '疲惫' | '做组耐力不够' | '力量下降' | '关节不适' | '状态很好'
 
 export interface TrainingRecommendation {
   type: RecommendationType
@@ -198,6 +205,7 @@ export interface MealSelection {
 export interface BodyLog {
   id: string
   date: string
+  // 晨起空腹体重。常态体重（去噪趋势）由它自动计算，不单独录入。
   weightKg: number
   waistCm: number
   sleepHours: number
@@ -213,6 +221,13 @@ export interface BodyLog {
   morningState?: number
   sleepQuality?: number
   mood?: string
+  // 食欲稳定情况 1～5（1=很乱、暴食冲动强；5=很稳）
+  appetiteStability?: number
+  // 当天是否吃了放纵餐
+  cheatMeal?: boolean
+  cheatMealNote?: string
+  // 空腹状态照片的 id。图片本体存在 IndexedDB（localStorage 存不下也拖慢保存）。
+  fastingPhotoId?: string | null
 }
 
 export interface Supplement {

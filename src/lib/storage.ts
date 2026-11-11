@@ -2,7 +2,7 @@ import type { AppState } from '../types'
 import { defaultDailyPlans, defaultLegExercises, defaultPullExercises, defaultPushExercises, defaultState } from '../data/defaults'
 
 const STORAGE_KEY = 'personal-fitness-dashboard-v1'
-const CURRENT_DATA_VERSION = 11
+const CURRENT_DATA_VERSION = 12
 
 function appendMissingExercises(
   planDays: AppState['planDays'],
@@ -113,6 +113,24 @@ export function migrateState(savedState: Partial<AppState>): AppState {
       const replacements = defaults.filter((plan) => (plan.dayType === 'training' && !hasTraining) || (plan.dayType === 'rest' && !hasRest))
       mergedState.dailyPlans = [...kept, ...replacements]
     }
+  }
+
+  if (savedVersion < 12) {
+    // 训练记录补「总时长 + 身体反馈」，身体记录补「食欲 / 放纵餐 / 空腹照片」。
+    // 旧数据一律给中性默认值，不假装用户填过。
+    mergedState.sessions = (mergedState.sessions ?? []).map((session) => ({
+      ...session,
+      durationMinutes: typeof session.durationMinutes === 'number' ? session.durationMinutes : 0,
+      feedbackTags: Array.isArray(session.feedbackTags) ? session.feedbackTags : [],
+      feedbackNote: typeof session.feedbackNote === 'string' ? session.feedbackNote : ''
+    }))
+    mergedState.bodyLogs = (mergedState.bodyLogs ?? []).map((log) => ({
+      ...log,
+      appetiteStability: typeof log.appetiteStability === 'number' ? log.appetiteStability : 3,
+      cheatMeal: log.cheatMeal === true,
+      cheatMealNote: typeof log.cheatMealNote === 'string' ? log.cheatMealNote : '',
+      fastingPhotoId: typeof log.fastingPhotoId === 'string' ? log.fastingPhotoId : null
+    }))
   }
 
   for (const plan of planDays) {
