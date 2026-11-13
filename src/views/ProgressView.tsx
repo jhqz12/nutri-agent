@@ -9,6 +9,7 @@ import {
   calculateWeightTrend, formatMinutes, formatSigned
 } from '../lib/bodyMetrics'
 import { compressImage, deletePhoto, loadPhoto, savePhoto } from '../lib/photoStore'
+import { NumberField } from '../components/NumberField'
 
 function movingAverage(values: BodyLog[], index: number): number {
   const slice = values.slice(Math.max(0, index - 6), index + 1)
@@ -53,11 +54,6 @@ export function ProgressView() {
   const [range, setRange] = useState<'7' | '30' | 'all'>('30')
   const [showForm, setShowForm] = useState(false)
   const [draft, setDraft] = useState(emptyBodyLog)
-  // 数值输入框的「原始文本」缓存：draft 里存的是数字，但直接把数字回填到输入框会导致
-  // 1) 默认值 0 删不掉（显示成 0，继续输入变成 05、072）
-  // 2) 小数点被吞掉（想输 72.5，输到 "72." 时会被 Number() 抹成 72，最后变成 725）
-  // 因此输入过程中以 text 为准显示，draft 只负责保存解析后的数字。
-  const [text, setText] = useState<Record<string, string | undefined>>({})
   const [photoDraft, setPhotoDraft] = useState<string | null>(null)
   const [photoMap, setPhotoMap] = useState<Record<string, string>>({})
   const [viewingPhoto, setViewingPhoto] = useState<string | null>(null)
@@ -107,7 +103,6 @@ export function ProgressView() {
   }, [state.bodyLogs])
 
   const openForm = () => {
-    setText({})
     setPhotoDraft(null)
     setFormError('')
     setShowForm(true)
@@ -161,21 +156,13 @@ export function ProgressView() {
     }
   }
 
-  const renderNumberField = (key: NumericFieldKey, label: string, mode: 'decimal' | 'numeric') => {
-    const current = Number(draft[key])
-    const shown = text[key] ?? (current === 0 ? '' : String(current))
-    return <label key={key}>{label}<input
-      type="text"
-      inputMode={mode}
-      value={shown}
-      onChange={(event) => {
-        const raw = event.target.value
-        setText({ ...text, [key]: raw })
-        const parsed = raw === '' ? 0 : Number(raw)
-        setDraft({ ...draft, [key]: Number.isNaN(parsed) ? 0 : parsed })
-      }}
+  const renderNumberField = (key: NumericFieldKey, label: string, mode: 'decimal' | 'numeric') => (
+    <label key={key}>{label}<NumberField
+      value={draft[key]}
+      decimals={mode === 'decimal'}
+      onChange={(next) => setDraft({ ...draft, [key]: next ?? 0 })}
     /></label>
-  }
+  )
 
   const latest = chartData[chartData.length - 1]
   const selected = chartData.find((item) => item.date === selectedDate)

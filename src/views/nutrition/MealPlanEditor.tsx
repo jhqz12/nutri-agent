@@ -3,6 +3,7 @@ import { Pencil, Plus, Trash2 } from 'lucide-react'
 import type { FoodRecord, MealEnergyRule, MealGroup, MenuItem } from '../../nutritionTypes'
 import { displayMealName, foodAllowedInGroup, formatFoodAmount, getDefaultFoodGrams, getManualAmountWarning, mealForFood, mergeDuplicateMenuItems } from '../../lib/foodUnits'
 import { calculateMealCalories, mealCalorieRange } from '../../lib/mealEnergy'
+import { NumberField, numberFromText, textFromNumber } from '../../components/NumberField'
 
 const groups: MealGroup[] = ['早餐', '午餐', '晚餐', '加餐']
 
@@ -22,7 +23,7 @@ function RuleEditor({ rule, onSave, onCancel }: { rule: MealEnergyRule; onSave: 
     if (minPercent > targetPercent || targetPercent > maxPercent) { setError('必须满足：下限≤目标≤上限。'); return }
     onSave({ meal: rule.meal, minPercent, targetPercent, maxPercent })
   }
-  return <div className="meal-rule-editor"><label>下限%<input type="number" min="0" max="100" value={draft.min} onChange={(event) => setDraft({ ...draft, min: event.target.value })} /></label><label>目标%<input type="number" min="0" max="100" value={draft.target} onChange={(event) => setDraft({ ...draft, target: event.target.value })} /></label><label>上限%<input type="number" min="0" max="100" value={draft.max} onChange={(event) => setDraft({ ...draft, max: event.target.value })} /></label><button className="button compact" onClick={onCancel}>取消</button><button className="button compact primary" onClick={save}>保存范围</button>{error && <small className="field-error">{error}</small>}</div>
+  return <div className="meal-rule-editor"><label>下限%<NumberField min={0} max={100} value={numberFromText(draft.min)} onChange={(next) => setDraft({ ...draft, min: textFromNumber(next) })} /></label><label>目标%<NumberField min={0} max={100} value={numberFromText(draft.target)} onChange={(next) => setDraft({ ...draft, target: textFromNumber(next) })} /></label><label>上限%<NumberField min={0} max={100} value={numberFromText(draft.max)} onChange={(next) => setDraft({ ...draft, max: textFromNumber(next) })} /></label><button className="button compact" onClick={onCancel}>取消</button><button className="button compact primary" onClick={save}>保存范围</button>{error && <small className="field-error">{error}</small>}</div>
 }
 
 export function MealPlanEditor({ menu, foods, targetCalories, energyRules, onChange, onRuleChange }: {
@@ -66,7 +67,7 @@ export function MealPlanEditor({ menu, foods, targetCalories, energyRules, onCha
                 if (!selected) return
                 updateAt(index, { foodId: selected.id, meal: mealForFood(group, selected), amount: getDefaultFoodGrams(selected), unit: 'g' })
               }}>{options.map((candidate) => <option value={candidate.id} key={candidate.id}>{candidate.name}</option>)}</select><small>{itemMacros(food, item.amount)}</small></div>
-              <label className="gram-input"><span>克重</span><input type="number" min="0" step="1" value={item.amount === 0 ? '' : item.amount} placeholder="0" onChange={(event) => updateAt(index, { ...item, amount: event.target.value === '' ? 0 : Math.max(0, Number(event.target.value)), unit: 'g' })} /></label>
+              <label className="gram-input"><span>克重</span><NumberField decimals={false} min={0} value={item.amount} placeholder="0" onChange={(next) => updateAt(index, { ...item, amount: next ?? 0, unit: 'g' })} /></label>
               <div className="serving-reference"><strong>{formatFoodAmount(food, item.amount)}</strong><small className={amountWarning ? 'field-warning' : undefined}>{amountWarning ?? (food.rules.join('；') || '无特殊规则')}</small></div>
               <button className="icon-button destructive" aria-label={`删除${group}${food.name}`} onClick={() => removeAt(index)}><Trash2 size={15} /></button>
             </div>

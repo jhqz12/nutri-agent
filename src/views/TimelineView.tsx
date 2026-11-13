@@ -9,6 +9,7 @@ import { buildScheduleRow, dailyPlanCategoryClass, getActivePlan, materializeIte
 import { calculateEngine, calculateMacro, getEffectiveLibrariesForState } from '../lib/engine'
 import { analyzePlanNutrition } from '../lib/planNutrition'
 import { displayMealName } from '../lib/foodUnits'
+import { NumberField } from '../components/NumberField'
 
 const categoryClass: Record<ScheduleItem['category'], string> = {
   生活: 'category-life', 工作: 'category-work', 饮食: 'category-food', 训练: 'category-training', 睡眠: 'category-sleep', 补剂: 'category-supplement'
@@ -297,9 +298,9 @@ export function TimelineView() {
             <div className="form-grid">
               <label>名称<input value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} /></label>
               <label>开始时间<input type="time" value={draft.time} onChange={(e) => setDraft({ ...draft, time: e.target.value })} /></label>
-              <label>持续分钟<input type="number" min="1" value={draft.durationMinutes} onChange={(e) => setDraft({ ...draft, durationMinutes: Number(e.target.value) })} /></label>
+              <label>持续分钟<NumberField decimals={false} min={1} value={draft.durationMinutes} onChange={(next) => setDraft({ ...draft, durationMinutes: next ?? 0 })} /></label>
               <label>类别<select value={draft.category} onChange={(e) => setDraft({ ...draft, category: e.target.value as ScheduleItem['category'] })}>{Object.keys(categoryClass).map((category) => <option key={category}>{category}</option>)}</select></label>
-              <label>提前提醒<input type="number" min="0" value={draft.reminderMinutes} onChange={(e) => setDraft({ ...draft, reminderMinutes: Number(e.target.value) })} /></label>
+              <label>提前提醒<NumberField decimals={false} min={0} value={draft.reminderMinutes} onChange={(next) => setDraft({ ...draft, reminderMinutes: next ?? 0 })} /></label>
               <label className="full-field">备注<textarea value={draft.notes} onChange={(e) => setDraft({ ...draft, notes: e.target.value })} /></label>
             </div>
             <div className="dialog-actions"><button className="button" onClick={() => setEditing(null)}><X size={16} />取消</button><button className="button primary" onClick={save}><Save size={16} />保存</button></div>

@@ -327,7 +327,7 @@ label input, label select, label textarea { color: var(--foreground); font-size:
 .supplement-ledger-row { display: grid; grid-template-columns: minmax(190px, 1.4fr) 90px 42px 74px minmax(220px, 1fr); gap: 10px; align-items: center; min-height: 62px; padding: 9px 0; border-bottom: 1px solid var(--border); }
 .supplement-ledger-row > div { min-width: 0; }.supplement-ledger-row > div strong, .supplement-ledger-row > div span { display: block; }
 .supplement-ledger-row > div strong { font-size: 13px; font-weight: 500; }.supplement-ledger-row > div span, .supplement-ledger-row small { color: var(--muted); font-size: 10px; }
-.supplement-ledger-row label { gap: 3px; }.supplement-ledger-row input[type=number] { padding: 7px 8px; }
+.supplement-ledger-row label { gap: 3px; }.supplement-ledger-row input.number-field { padding: 7px 8px; }
 .supplement-ledger-row .switch-label { justify-self: start; }.supplement-unit { color: var(--muted); font-size: 11px; }
 .supplement-ledger-row.is-locked { background: var(--danger-soft); }.supplement-ledger-row.is-locked small { color: var(--danger); }
 

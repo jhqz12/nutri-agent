@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ArrowRight, HeartPulse } from 'lucide-react'
 import { useAppState } from '../state/AppContext'
+import { NumberField, numberFromText, textFromNumber } from '../components/NumberField'
 
 export function Onboarding({ onFinish }: { onFinish: () => void }) {
   const { setState } = useAppState()
@@ -42,11 +43,11 @@ export function Onboarding({ onFinish }: { onFinish: () => void }) {
           <label>性别
             <select value={sex} onChange={(event) => setSex(event.target.value as 'male' | 'female')}><option value="male">男</option><option value="female">女</option></select>
           </label>
-          <label>年龄<input type="number" min="10" max="100" inputMode="numeric" placeholder="岁" value={age} onChange={(event) => setAge(event.target.value)} /></label>
-          <label>身高<input type="number" min="100" max="250" inputMode="decimal" placeholder="cm" value={heightCm} onChange={(event) => setHeightCm(event.target.value)} /></label>
-          <label>体重<input type="number" min="30" max="400" step="0.1" inputMode="decimal" placeholder="kg" value={weightKg} onChange={(event) => setWeightKg(event.target.value)} /></label>
-          <label>目标体重（可选）<input type="number" min="30" max="400" step="0.1" inputMode="decimal" placeholder="kg" value={targetWeightKg} onChange={(event) => setTargetWeightKg(event.target.value)} /></label>
-          <label>体脂率（可选）<input type="number" min="3" max="70" step="0.1" inputMode="decimal" placeholder="%" value={bodyFatPercent} onChange={(event) => setBodyFatPercent(event.target.value)} /></label>
+          <label>年龄<NumberField decimals={false} placeholder="岁" value={numberFromText(age)} onChange={(next) => setAge(textFromNumber(next))} /></label>
+          <label>身高<NumberField decimals={false} placeholder="cm" value={numberFromText(heightCm)} onChange={(next) => setHeightCm(textFromNumber(next))} /></label>
+          <label>体重<NumberField placeholder="kg" value={numberFromText(weightKg)} onChange={(next) => setWeightKg(textFromNumber(next))} /></label>
+          <label>目标体重（可选）<NumberField placeholder="kg" value={numberFromText(targetWeightKg)} onChange={(next) => setTargetWeightKg(textFromNumber(next))} /></label>
+          <label>体脂率（可选）<NumberField placeholder="%" value={numberFromText(bodyFatPercent)} onChange={(next) => setBodyFatPercent(textFromNumber(next))} /></label>
         </div>
         {!canSubmit && <p className="onboarding-hint">请先填写年龄、身高、体重，其余可稍后在「设置」里补充。</p>}
         <div className="dialog-actions onboarding-actions">
